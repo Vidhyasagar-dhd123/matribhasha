@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-
+import NavBar from "../components/NavBar";
+import Hero from "../components/Hero";
 export default function Home(){
     const [data, setData] = useState("")
    useEffect(()=>{
@@ -11,7 +12,9 @@ export default function Home(){
     fetchData()
    })
     return (
-        <div>
+        <div class="w-full">
+            <NavBar></NavBar>
+            <Hero className="container"></Hero>
             {data||"Welcome to Next"}
         </div>
     )

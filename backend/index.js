@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import warn from './controllers/logger.js'
+import {warn,logTable} from './controllers/logger.js'
 
 
 const app = express()
@@ -23,5 +23,6 @@ app.get('/',(req, res)=>{
 
 app.route("")
 app.listen(port,(msg)=>{
-    console.log(`server running on port ${port}`)
+    warn(`server running on port ${port}`)
+    logTable(`Welcome to the Application`,10)
 })

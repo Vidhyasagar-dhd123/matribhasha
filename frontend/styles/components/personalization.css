@@ -1,0 +1,12 @@
+@reference "tailwindcss";
+
+/*Implement Personalization schemes here Dark Mode , Light Mode, and various themes*/
+
+:root{
+    --primary-color : #ffa;
+}
+
+.dark{
+
+}
+

@@ -1,0 +1,7 @@
+/* frontend/styles/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import './components/personalization.css';
+@import './components/containers.css';

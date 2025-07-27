@@ -1,0 +1,12 @@
+@reference "tailwindcss";
+@import "./personalization.css";
+
+/* Implement container classes such as cards jumbotron hero corousel here*/
+
+*{
+    margin:0;
+    padding:0
+}
+.container{
+    @apply py-4 px-4 rounded;
+}
