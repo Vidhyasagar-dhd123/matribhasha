@@ -5,3 +5,32 @@
 
 @import './components/personalization.css';
 @import './components/containers.css';
+
+html,body{
+    height: 100vh;
+    font-family:  Calibri;
+}
+
+#__next{
+    height: 100vh;
+}
+
+.bg-size-100{
+    background-size: 100px;
+}
+
+.bg-size-200{
+    background-size: 200px;
+}
+
+@keyframes moveBg {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

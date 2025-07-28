@@ -1,26 +1,23 @@
-
-//imports
-
-import NavBar from "./NavBar"
-
 /*
 +======================================================================+
 |                                                                      |
-|          #Header.jsx to be implemented                               |
+|          #Footer.jsx to be implemented                               |
 |          Is exported in files :                                      |
 |              ./Layout.jsx                                            |
 |                                                                      |
 |          This file imports                                           |
-|              ./NavBar.jsx                                            |
 |                                                                      |
 |          after changes put your update in this comment.              |
 |                                                                      |
 +======================================================================+
 */
 
-
-const Header=()=>{
-    return <NavBar></NavBar>
+const Footer =() =>{
+    return (
+        <div className="w-full bg-gradient-to-l from-gray-300 to-gray-600">
+            Footer
+        </div>
+    )
 }
 
-export default Header
+export default Footer

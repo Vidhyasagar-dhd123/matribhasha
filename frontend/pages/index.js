@@ -12,9 +12,8 @@ export default function Home(){
     fetchData()
    })
     return (
-        <div class="w-full">
-            <NavBar></NavBar>
-            <Hero className="container"></Hero>
+        <div class="w-full min-h-full">
+            <Hero className="bg-white  h-screen p-0 sm:p-4"></Hero>
             {data||"Welcome to Next"}
         </div>
     )

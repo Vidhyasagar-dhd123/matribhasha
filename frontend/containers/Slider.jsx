@@ -1,26 +1,24 @@
 
-//imports
-
-import NavBar from "./NavBar"
-
 /*
 +======================================================================+
 |                                                                      |
-|          #Header.jsx to be implemented                               |
+|          #Slider.jsx to be implemented                               |
+|              scrollable quotes, phrases and stories                  |
 |          Is exported in files :                                      |
-|              ./Layout.jsx                                            |
 |                                                                      |
 |          This file imports                                           |
-|              ./NavBar.jsx                                            |
 |                                                                      |
 |          after changes put your update in this comment.              |
 |                                                                      |
 +======================================================================+
 */
 
-
-const Header=()=>{
-    return <NavBar></NavBar>
+const Slider = () =>{
+    return(
+        <>
+            Slider
+        </>
+    )
 }
 
-export default Header
+export default Slider
