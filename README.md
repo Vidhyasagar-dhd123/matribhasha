@@ -10,10 +10,9 @@
 
 | Technology | Use |
 |------------|------|
-| **React** | Frontend UI framework |
-| **Express** | RESTful API backend |
+| **Next** | Frontend UI framework |
 | **Django** | translation service |
-| **Bootstrap** | Rapid UI prototyping and styling |
+| **Tailwind** | Rapid UI prototyping and styling |
 | **MongoDB** | NoSQL database for user data and translations |
 
 ---
@@ -37,3 +36,12 @@
 
 > Feel free to clone, fork, and contribute to the project!  
 > Together, let’s make communication borderless and language-neutral.
+
+
+## Environment Variable
+|Key|Value|
+|-|-|
+|MONGO_URI|*Your Mongodb connection string*|
+|JWT_SECRET| *Your Secret*|
+|LLM_API |*Your LLM API*|
+---
