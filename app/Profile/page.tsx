@@ -1,7 +1,8 @@
-const Profile = ()=>{
-    return(
-        <>Profile</>
-    )
+
+const Profile = () =>{
+    return (<>
+        Profile
+        </>)
 }
 
 export default Profile
