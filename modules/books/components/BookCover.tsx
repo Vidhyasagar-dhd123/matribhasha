@@ -2,7 +2,12 @@ import { Book } from "../utils/books";
 import IndImg from "@/public/Indlang.jpg"
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-function BookCover({ book,...props }: { book: Book }) {
+
+type BookCoverProps = React.HTMLAttributes<HTMLDivElement> & {
+  book: Book
+}
+
+function BookCover({ book,...props }:BookCoverProps) {
   return (
     <div className={cn("bg-white h-full flex flex-col rounded-2xl shadow-lg",props.className)} {...props}>
       <Image

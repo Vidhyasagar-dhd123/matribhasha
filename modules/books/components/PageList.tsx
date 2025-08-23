@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { LoaderCircle } from "lucide-react"
 import { useReader } from "../contexts/read.context"
 
 const PageList = () =>{
