@@ -41,7 +41,7 @@ export async function GET(req:Request,{params}:{params:Promise<{pageNo:number|un
             userId = user._id
         }
 
-        const query : Record<string,any> = {pageId:page._id}
+        const query : Record<string,unknown> = {pageId:page._id}
 
         if(userId) query.authorId = userId;
 
