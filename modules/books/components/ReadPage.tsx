@@ -9,8 +9,8 @@ const ReadPage = () =>{
             console.log("Fetching Content : ",`/api/v1/pages/${page?.data?.bookUUID}/${page?.data?.pageNumber}`)
 
             const params = new URLSearchParams()
-            if(author?.data)
-                params.append("author",author?.data)
+            if(author?.data?.authorId?.email)
+                params.append("author",author?.data?.authorId?.email)
             if(language?.data)
                 params.append("language",language?.data)
 
@@ -31,7 +31,7 @@ const ReadPage = () =>{
             <div className=" bg-gray-50 p-10 rounded-2xl max-w-4xl w-full text-justify lg:min-w-4xl flex flex-col min-h-full relative">
                 <div className="mb-4 text-right text-sm text-gray-400">{book?.data?.title}</div>
                 <div className="grow w-full">{content?.data?.content}</div>
-                <div className="text-center text-gray-600 ">{(page?.data?.pageNumber+1).toString().padStart(2,"0")}</div>
+                <div className="text-center text-gray-600 ">{(page?.data?.pageNumber?page?.data?.pageNumber+1:0).toString().padStart(2,"0")}</div>
             </div>
         </div>
     )

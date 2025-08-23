@@ -7,6 +7,7 @@ import BookCover from "@/modules/books/components/BookCover";
 import StatsGrid from "@/modules/books/components/StatsGrid";
 import ActionButtons from "@/modules/books/components/ActionButtons";
 import AboutSection from "@/modules/books/components/AboutSection";
+import { Book } from "@/modules/books/utils/books";
 
 function Loading() {
   return <div className="text-center p-10">Loading book details...</div>;
@@ -18,7 +19,7 @@ function ErrorFallback({ error }: { error: string }) {
 
 function BookDescription({ params }: { params: Promise<{ id: string }> }) {
   const {id} = React.use(params);
-  const [book,setBook] = useState({})
+  const [book,setBook] = useState<Book|null>(null)
   const [isLoading,setLoading] = useState(true)
 
   useEffect(()=>{
@@ -38,7 +39,7 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
     return <ErrorFallback error="Book not found" />;
   }
 
-  const title = book.title; // Derived for cleanliness
+  const title = book?.title; // Derived for cleanliness
   return (
     <section className="bg-gray-50 min-h-screen flex flex-col items-center py-8">
       <div className="flex flex-col items-center max-w-6xl w-full px-4">

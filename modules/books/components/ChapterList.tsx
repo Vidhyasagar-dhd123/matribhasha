@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react"
 
 
 const ChapterList = () =>{
-    const [chapters,setChapters] = useState([])
     return (
         <div className="min-w-40 h-full min-h-screen bg-blue-100">
             {

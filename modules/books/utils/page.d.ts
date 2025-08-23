@@ -3,4 +3,5 @@ export interface Page{
     pageNumber:number;
     originalLanguage:string;
     bookId:string;
+    bookUUID:string;
 }

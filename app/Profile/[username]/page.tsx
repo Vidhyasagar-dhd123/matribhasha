@@ -1,8 +1,7 @@
 "use client"
 import React from "react";
 import { useAuth } from "@/modules/auth/contexts/authContext";
-import ProfileCard from "@/modules/user/components/ProfileCard";
-import { Button } from "@/modules/shared/components/Button";
+import ProfileCard from "@/modules/user/components/ProfileCard"
 
 export default function ProfilePage({
   params,

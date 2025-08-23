@@ -1,18 +1,23 @@
 import React, { useContext, createContext, useState, useEffect, ReactNode } from "react";
+import { Book } from "../utils/books";
+import { Page } from "../utils/page";
+import { Values } from "../utils/readcontext";
+import { Author } from "../utils/authors";
+import { PageVersion } from "../utils/pageversion";
 
 
-const ReadContext = createContext(null)
+const ReadContext = createContext<Values>({} as Values)
 
 export const ReadProvider = ({id,children}:{id:string,children:ReactNode}) =>{
     const [language,setLanguage] = useState<string>("en")
-    const [authors,setAuthors] = useState([])
-    const [author,setAuthor] = useState<string|null>(null)
-    const [page, setPage] = useState<object>({})
-    const [pages,setPages] = useState([])
+    const [authors,setAuthors] = useState<Author[]|null>([] as Author[])
+    const [author,setAuthor] = useState<Author|null>(null)
+    const [page, setPage] = useState<Page|null>(null)
+    const [pages,setPages] = useState<Page[]|null>([] as Page[])
     const [chapter,setChapter] = useState<object>({})
-    const [chapters,setChapters] = useState([])
-    const [contentPage, setContentPage] = useState<object>({})
-    const [book,setBook] = useState<object>({})
+    const [chapters,setChapters] = useState<object[]>([] as object[])
+    const [contentPage, setContentPage] = useState<PageVersion|null>(null)
+    const [book,setBook] = useState<Book|null>(null)
 
     useEffect(()=>{
         const loadBook = async()=>{
@@ -48,7 +53,7 @@ export const ReadProvider = ({id,children}:{id:string,children:ReactNode}) =>{
         }
     }
 
-    const value =
+    const value :Values =
     {   
         book:{data:book , set:setBook },
         authors:{data: authors, set: setAuthors},

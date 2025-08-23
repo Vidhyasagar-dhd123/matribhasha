@@ -8,7 +8,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) =>{
     const {id} = React.use(params)
     return(
         <ReadProvider id={id}>
-            <ReadContainer id={id}></ReadContainer>
+            <ReadContainer></ReadContainer>
         </ReadProvider>
     )
 }

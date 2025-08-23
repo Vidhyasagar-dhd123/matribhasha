@@ -3,7 +3,7 @@ import Book from "@/modules/books/models/Book.model";
 import Page from "@/modules/books/models/Pages.model";
 
 
-export async function GET(req,{params}:{params:Promise<{id:string, pageNo:number}>}){
+export async function GET(req:Request,{params}:{params:Promise<{id:string, pageNo:number}>}){
     try
     {
         await connection()

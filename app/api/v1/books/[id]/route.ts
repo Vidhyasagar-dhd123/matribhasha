@@ -1,7 +1,7 @@
 import Book from "@/modules/books/models/Book.model";
 import connection from "@/lib/database";
 
-export async function GET(req,{params}:{params:Promise<{id:string}>}){
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){
     try
     {
         const {id} = await params

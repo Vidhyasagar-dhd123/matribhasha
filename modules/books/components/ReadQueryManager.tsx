@@ -27,7 +27,7 @@ const ReadQueryManager = () =>{
                         {   authors &&
                             authors?.data?.map((value,key)=>{
                                 return(
-                                <div onClick={()=>{author?.set(value?.authorId?.email);language?.set(value?.language)}} key={key}>
+                                <div onClick={()=>{author?.set(value);language?.set(value?.language)}} key={key}>
                                     <div className="text-blue-700">{value?.authorId?.name}</div>
                                     <div className="text-blue-600 text-sm">{value?.authorId?.email}</div>
                                     <span>{value?.language}</span>

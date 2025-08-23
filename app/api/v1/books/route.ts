@@ -1,6 +1,6 @@
 import Book from "@/modules/books/models/Book.model";
 import connection from "@/lib/database";
-export async function GET(req){
+export async function GET(req:Request){
     try{
         await connection()
         const Books = await Book.find()

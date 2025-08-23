@@ -1,10 +1,14 @@
 import { Book } from "../utils/books";
 import IndImg from "@/public/Indlang.jpg"
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import React from "react";
 
-function BookRibbon({book,...props}:{book:Book}){
+
+type BookRibbonProps = React.HTMLAttributes<HTMLDivElement> & {
+  book: Book
+}
+
+function BookRibbon({book,...props}:BookRibbonProps){
     return(
         <div className="w-full hover:shadow-lg shadow-white" {...props}>
             <div className="flex hover:shadow-lg">

@@ -3,10 +3,10 @@ export interface Book {
   id: string;
   title: string;
   author: string;
-  language: string;
+  originalLanguage: string;
   reviews: string;
-  pages: number;
-  edits: number;
+  pages: string[]|null;
+  uuid:string;
   isbn: string;
   published: number;
   versions: string[];

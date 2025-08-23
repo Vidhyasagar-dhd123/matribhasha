@@ -3,7 +3,7 @@
 import ChapterList from "@/modules/books/components/ChapterList"
 import PageList from "@/modules/books/components/PageList"
 import ReadPage from "@/modules/books/components/ReadPage"
-import React, { useEffect, useState } from "react"
+import React from "react"
 import ReadQueryManager from "./ReadQueryManager"
 
 const ReadContainer = () =>{

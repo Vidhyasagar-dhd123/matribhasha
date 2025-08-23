@@ -1,5 +1,4 @@
-import img from '@/public/next.svg'
-import Image from 'next/image'
+
 const Hero = () =>{
     return (
         <div className="text-center p-4 bg-gradient-to-r h-[80svh] from-0% from-gray-100 to-100% to-gray-200 flex flex-col justify-center items-center ">

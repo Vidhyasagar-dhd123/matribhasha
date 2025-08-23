@@ -4,11 +4,11 @@ import {  Search } from "lucide-react"
 import BookRibbon from "@/modules/books/components/BookRibbon"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { Book } from "@/modules/books/utils/books"
 
 const Books = () =>{
     const router = useRouter()
-    const [Books, setBooks] = useState(
-        [])
+    const [Books, setBooks] = useState<Book[]>([])
 
     useEffect(()=>{
         const getBooks = async()=>{
@@ -30,7 +30,7 @@ const Books = () =>{
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 items-stretch">
                     {Books && Books.map((value,key)=>{
-                        return <div key={key} className="p-4"><BookRibbon onClick={()=>{router.push("/Books/"+value.uuid)}} book={value}></BookRibbon></div>
+                        return <div key={key} className="p-4"><BookRibbon onClick={()=>{router.push("/Books/"+value?.uuid)}} book={value}></BookRibbon></div>
                     })}
                 </div>
             </article>
