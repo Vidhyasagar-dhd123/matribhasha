@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 experiments.js
+
+/modules/Development/experiments.ts
+/app/api/v1/populate

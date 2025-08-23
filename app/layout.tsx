@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Navbar></Navbar>
-          <main className="h-full">
+          <main className="min-h-screen">
             {children}
           </main>
           <Footer></Footer>

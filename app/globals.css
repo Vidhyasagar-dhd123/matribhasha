@@ -17,6 +17,8 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary-grad-stop-1 : rgb(0, 50, 255);
+    --primary-grad-stop-2 : rgb(0, 100, 255);
   }
 }
 
@@ -24,4 +26,22 @@ body,html {
   font-family: Arial, Helvetica, sans-serif;
   height: 100%;
   width: 100%;
+}
+
+.primary-grad{
+  background-image:linear-gradient(to left, var(--primary-grad-stop-1), var(--primary-grad-stop-2));
+}
+
+.primary-grad-hover:hover{
+  background-image:none;
+}
+
+.unit:first-child{
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
+}
+
+.unit:last-child{
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
 }
