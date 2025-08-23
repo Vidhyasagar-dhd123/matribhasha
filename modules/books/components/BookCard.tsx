@@ -39,7 +39,7 @@ function BookCard() {
       {books.map((book) => (
         <Card key={book.id} className="rounded-xl shadow hover:shadow-lg transition max-w-[300px] relative">
           <Image
-            src={book.thumbnail}
+            src={IndImage}
             alt={book.name}
             className="w-full h-48 object-cover rounded-t-xl"
             width={200}
