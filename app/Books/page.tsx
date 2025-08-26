@@ -23,7 +23,7 @@ const Books = () =>{
 
     return (
         <section className="bg-gray-50 min-h-screen flex flex-col items-center">
-            <article className="max-w-6xl w-full">
+            <article className="max-w-6xl w-full flex flex-col">
                 <div className="max-w-6xl m-4 w-full p-10 flex items-center">
                     <Input className="w-full" placeholder="Search Something..."></Input>
                     <Search className="m-4 cursor-pointer"></Search>
@@ -32,7 +32,16 @@ const Books = () =>{
                     {Books && Books.map((value,key)=>{
                         return <div key={key} className="p-4"><BookRibbon onClick={()=>{router.push("/Books/"+value?.uuid)}} book={value}></BookRibbon></div>
                     })}
+                    
                 </div>
+                {
+                    !(Books?.length>0) &&
+                    <div className="w-full text-center">
+                        <div className="bg-red-100 p-10 md:p-20 m-10 md:m-24 text-red-500 rounded-md  border-x-10 border-x-red-500">
+                            Books not found
+                        </div>
+                    </div>
+                }
             </article>
         </section>
     )

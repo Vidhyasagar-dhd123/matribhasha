@@ -11,6 +11,6 @@ export interface Values {
   pages: { data: Page[] | null; set: (p: Page[] | null) => void }
   chapter: { data: object; set: (c: object) => void }
   chapters: { data: object[]; set: (cs: object[]) => void }
-  language: { data: string; set: (l: string) => void }
+  language: { data: string|null; set: (l: string) => void }
   content: { data: PageVersion | null; set: (c: PageVersion | null) => void }
 }

@@ -9,7 +9,7 @@ import { PageVersion } from "../utils/pageversion";
 const ReadContext = createContext<Values>({} as Values)
 
 export const ReadProvider = ({id,children}:{id:string,children:ReactNode}) =>{
-    const [language,setLanguage] = useState<string>("en")
+    const [language,setLanguage] = useState<string|null>(null)
     const [authors,setAuthors] = useState<Author[]|null>([] as Author[])
     const [author,setAuthor] = useState<Author|null>(null)
     const [page, setPage] = useState<Page|null>(null)
