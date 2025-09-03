@@ -4,11 +4,12 @@ import "./globals.css";
 import Navbar from "../modules/shared/components/Navbar";
 import Footer from "../modules/shared/components/Footer";
 import { AuthProvider } from "@/modules/auth/contexts/authContext";
+import { useEffect } from "react";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
@@ -25,16 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}>
         <AuthProvider>
-          <Navbar></Navbar>
-          <main className="min-h-screen">
+          <Navbar />
+          <main className="min-h-screen bg-background text-foreground">
             {children}
           </main>
-          <Footer></Footer>
+          <Footer />
         </AuthProvider>
       </body>
     </html>
