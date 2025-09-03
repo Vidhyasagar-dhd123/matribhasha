@@ -3,7 +3,7 @@ import { useReader } from "../contexts/read.context"
 
 
 const ReadPage = () =>{
-    const {content,page, book,author,language} = useReader()
+    const {content,page, book,author,language,authors} = useReader()
     useEffect(()=>{
         const getPageVersion=async()=>{
             console.log("Fetching Content : ",`/api/v1/pages/${page?.data?.bookUUID}/${page?.data?.pageNumber}`)

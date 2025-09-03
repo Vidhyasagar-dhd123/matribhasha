@@ -44,7 +44,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <ReadProvider id={id}>
-        <div className="sticky w-full flex justify-between bg-blue-100  top-0 p-2 border-b border-b-blue-300 z-20">
+        <div className="sticky w-full flex justify-between bg-gray-100  top-0 p-2 border-b border-b-gray-300 z-20">
           <SidebarToggle
             isOpen={leftBarOpen}
             onClick={() => setLeftBarOpen(!leftBarOpen)}
