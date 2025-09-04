@@ -4,7 +4,6 @@ import "./globals.css";
 import Navbar from "../modules/shared/components/Navbar";
 import Footer from "../modules/shared/components/Footer";
 import { AuthProvider } from "@/modules/auth/contexts/authContext";
-import { useEffect } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
