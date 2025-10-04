@@ -2,7 +2,7 @@ import { Book } from "../utils/books";
 
 function AboutSection({ book }: { book: Book }) {
   return (
-    <article className="bg-white max-w-4xl rounded-xl flex flex-col m-10 md:m-0 md:flex-row justify-center items-center md:items-start md:justify-start">
+    <article className="bg-[var(--secondary)] max-w-4xl rounded-xl flex flex-col m-10 md:m-0 md:flex-row justify-center items-center md:items-start md:justify-start">
       <div className="grid grid-cols-1 p-2 sm:grid-cols-2 gap-4 w-full">
         <div className="border rounded p-4">
           <h2 className="mb-2 text-lg font-bold">About this book</h2>

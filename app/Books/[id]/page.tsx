@@ -41,12 +41,12 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
 
   const title = book?.title; // Derived for cleanliness
   return (
-    <section className="bg-gray-50 min-h-screen flex flex-col items-center py-8">
+    <section className="min-h-screen flex flex-col items-center py-8">
       <div className="flex flex-col items-center max-w-6xl w-full px-4">
-        <article className="w-full p-4 bg-white mb-4 rounded flex justify-between items-center shadow">
+        <article className="w-full p-4 bg-[var(--secondary)] mb-4 rounded flex justify-between items-center shadow">
           <h1 className="text-2xl font-bold capitalize">{title}</h1>
           <button aria-label="Edit book details">
-            <Edit className="text-gray-600 hover:text-gray-800" />
+            <Edit className="text-[var(--accent-foreground)] hover:text-gray-800" />
           </button>
         </article>
         <article className="mb-5 rounded-2xl flex flex-col md:flex-row justify-center items-center md:items-start md:justify-start gap-6">

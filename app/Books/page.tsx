@@ -22,7 +22,7 @@ const Books = () =>{
     },[])
 
     return (
-        <section className="bg-gray-50 min-h-screen flex flex-col items-center">
+        <section className="min-h-screen flex flex-col items-center">
             <article className="max-w-6xl w-full flex flex-col">
                 <div className="max-w-6xl m-4 w-full p-10 flex items-center">
                     <Input className="w-full" placeholder="Search Something..."></Input>

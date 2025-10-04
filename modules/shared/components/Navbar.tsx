@@ -34,7 +34,7 @@ const Navbar = () => {
         <>
             <div className="flex justify-around sticky top-0 bg-white dark:bg-gray-900 z-50 text-black dark:text-white">
                 <div className="p-4">Matribhasha</div>
-                <div className="flex items-center justify-center mx-4">
+                <div className="items-center justify-center mx-4 hidden md:flex">
                     <Link className="hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded" href="/">Homepage</Link>
                     <Link className="hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded" href="/Books">Books</Link>
                     <Link className="hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded" href="/Dashboard">Dashboard</Link>

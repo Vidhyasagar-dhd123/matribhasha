@@ -44,7 +44,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 
   return (
     <ReadProvider id={id}>
-        <div className="sticky w-full flex justify-between bg-gray-100  top-0 p-2 border-b border-b-gray-300 z-20">
+        <div className="sticky w-full flex justify-between top-0 p-2 border-b  z-20">
           <SidebarToggle
             isOpen={leftBarOpen}
             onClick={() => setLeftBarOpen(!leftBarOpen)}
@@ -61,7 +61,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             align="right"
           />
         </div>
-      <section className="flex flex-col items-center justify-center bg-gray-200 w-full overflow-x-hidden">
+      <section className="flex flex-col items-center justify-center bg-background w-full overflow-x-hidden">
         
         {/* Content Area */}
         <div className="flex flex-row justify-between w-full relative overflow-hidden">

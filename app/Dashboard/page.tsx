@@ -31,7 +31,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gradient-to-r from-pink-50 to-purple-50 p-6 space-y-8">
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-r from-pink-50 to-purple-50 p-6 space-y-8 dark:from-gray-800 dark:to-gray-900">
       
       {/* User Card */}
       <Card className="w-full max-w-md shadow-xl rounded-2xl">

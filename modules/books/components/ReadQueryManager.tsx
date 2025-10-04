@@ -20,7 +20,7 @@ const ReadQueryManager = () =>{
         console.log(language?.data)
     },[page?.data])
     return (
-        <div className="w-60 z-10 right-0 top-0  h-full min-h-screen bg-gray-100 border-r border-r-gray-300 lg:relative">
+        <div className="w-60 z-10 right-0 top-0  h-full min-h-screen bg-[var(--secondary)] border-r  lg:relative">
             {/*absolute bg-blue-100 right-0 top-0 h-full w-60 lg:relative border-l border-l-blue-300*/}
             <div className="z-50 ">
                 <div className="p-4">Author</div>
@@ -28,10 +28,10 @@ const ReadQueryManager = () =>{
                         {   authors &&
                             authors?.data?.map((value,key)=>{
                                 return(
-                                <div className="border-b p-4 border-b-gray-300 bg-gray-200" onClick={()=>{author?.set(value);language?.set(value?.language)}} key={key}>
-                                    <div className="text-blue-700 flex">{value?.authorId?.name}</div>
-                                    <div className="text-blue-600 text-sm inline">{value?.authorId?.email}</div>
-                                    <span className="p-2 text-red-700">{value?.language}</span>
+                                <div className="border-b p-4 bg-[var(--accent)]" onClick={()=>{author?.set(value);language?.set(value?.language)}} key={key}>
+                                    <div className="text-blue-700 flex dark:text-blue-400">{value?.authorId?.name}</div>
+                                    <div className="text-blue-600 text-sm inline dark:text-blue-500">{value?.authorId?.email}</div>
+                                    <span className="p-2 text-red-700 dark:text-red-500">{value?.language}</span>
                                 </div>)
                             })
                         }
