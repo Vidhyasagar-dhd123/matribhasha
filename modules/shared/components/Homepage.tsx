@@ -1,18 +1,21 @@
-import BookCard from "../../books/components/BookCard"
+'use client'
+import { Sparkles } from "lucide-react"
 import Features from "./Features"
 import Hero from "./Hero"
+import PopularBooksByCategory from "@/modules/books/components/popular-book-section"
 
-const Homepage=()=>{
+
+export default function Homepage(){
     return (
         <div className="min-h-screen">
             <Hero></Hero>
             <Features></Features>
-            <div className="flex flex-col justify-center items-center m-10">
-                <h1 className="text-3xl md:text-4xl font-bold mb-12 text-gray-800">Popular Books</h1>
-                <BookCard></BookCard>
+            {/* Popular Books Catgory */}
+               <div>
+                {/* Pass BOOKS array to PopularBooksByCategory */}
+               <PopularBooksByCategory />
             </div>
         </div>
     )
 }
 
-export default Homepage
