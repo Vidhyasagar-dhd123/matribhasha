@@ -34,47 +34,84 @@ const books: Book[] = [
 ];
 
 function BookCard() {
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-      {books.map((book) => (
-        <Card key={book.id} className="rounded-xl shadow hover:shadow-lg transition max-w-[300px] relative">
-          <Image
-            src={IndImage}
-            alt={book.name}
-            className="w-full h-48 object-cover rounded-t-xl"
-            width={200}
-            height={200}
-          />
-          <CardHeader className=" rounded-t-xl w-full !p-2 overflow-clip ">
-            <CardTitle className="text-lg font-semibold ">{book.name}</CardTitle>
-            <p className="text-sm text-gray-600">{book.language}</p>
-          </CardHeader>
-          <CardContent className="!p-2 !pb-4">
-            <div className="flex justify-between items-center">
+return (
+  <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 py-8">
+    {books.map((book) => (
+      <Card
+        key={book.id}
+        className="
+          relative overflow-hidden rounded-xl
+          bg-card text-card-foreground
+          border border-border
+          transition-shadow
+          hover:shadow-md
+        "
+      >
+        {/* Cover */}
+        <Image
+          src={IndImage}
+          alt={book.name}
+          width={300}
+          height={200}
+          className="
+            h-48 w-full object-cover
+            border-b border-border
+          "
+        />
+
+        {/* Header */}
+        <CardHeader className="px-4 pt-3 pb-2">
+          <CardTitle className="text-base font-semibold leading-snug">
+            {book.name}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            {book.language}
+          </p>
+        </CardHeader>
+
+        {/* Footer */}
+        <CardContent className="px-4 pb-4 pt-2">
+          <div className="flex items-center justify-between">
+            
             {/* Rating */}
-            <div className="flex items-center gap-1 ">
+            <div className="flex items-center gap-1 text-muted-foreground">
               {Array.from({ length: 5 }).map((_, idx) => (
                 <Star
                   key={idx}
-                  size={18}
+                  size={16}
                   className={
                     idx < Math.round(book.rating)
-                      ? "text-yellow-500 fill-yellow-500"
-                      : "text-gray-300"
+                      ? "fill-primary text-primary"
+                      : "text-muted-foreground"
                   }
                 />
               ))}
-              <span className="text-sm text-gray-500 ml-2">{book.rating.toFixed(1)}</span>
+              <span className="ml-2 text-sm">
+                {book.rating.toFixed(1)}
+              </span>
             </div>
 
-            {/* Actions */}
-              <Link href={"/Books/"+book.name.replaceAll(" ",'-')}><button className="cursor-pointer"><BookOpenIcon className="h-4"></BookOpenIcon></button></Link>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  );
+            {/* Read Action */}
+            <Link
+              href={`/Books/${book.name.replaceAll(" ", "-")}`}
+              className="
+                inline-flex items-center gap-1
+                text-sm font-medium
+                text-muted-foreground
+                hover:text-foreground
+                transition-colors
+              "
+            >
+              <BookOpenIcon className="h-4 w-4" />
+              Read
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    ))}
+  </div>
+);
+
 }
 
 export default BookCard

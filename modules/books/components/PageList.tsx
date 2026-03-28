@@ -15,12 +15,12 @@ const PageList = ({...props}:React.HTMLAttributes<HTMLDivElement>) =>{
     },[pages,authors,language])
 
     return (
-        <aside className="w-full" {...props}>
-                <div className="w-full overflow-x-auto bg-background  min-w-[100px] flex items-center overflow-y-auto justify-center border   ">
+        <aside className="w-full bg-background" {...props}>
+                <div className="w-full overflow-x-auto   min-w-[100px] flex items-center overflow-y-auto justify-center border   ">
                     {
                         pages?.data &&
                         pages?.data.map((page_i,key)=>{
-                            return <div onClick={()=>page.set(page_i)} className="cursor-pointer border border-[var(--secondary)] bg-[var(--secondary)] px-2 py-1  text-center" key={key}>{page_i?.pageNumber}</div>
+                            return <div onClick={()=>page.set(page_i)} className="cursor-pointer border   px-2 py-1  " key={key}>{page_i?.pageNumber}</div>
                         })
                     }
                 </div>

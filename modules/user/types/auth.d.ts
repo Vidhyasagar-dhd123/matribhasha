@@ -1,7 +1,8 @@
 export interface User{
-    id:string;
-    username:string;
+    _id:string;
+    name:string;
     email:string;
+    isBlocked:boolean;
 }
 
 export interface AuthContextType{

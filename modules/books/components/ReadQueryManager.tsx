@@ -1,9 +1,7 @@
 import { useEffect } from "react"
 import { useReader } from "../contexts/read.context"
-import {CircleUser} from 'lucide-react'
-
 const ReadQueryManager = () =>{
-    const {authors,content,page, author,language} = useReader()
+    const {authors,page, author,language} = useReader()
     useEffect(()=>{
         const getAuthors = async ()=>{
             console.log("Requesting Authors...")
@@ -20,18 +18,18 @@ const ReadQueryManager = () =>{
         console.log(language?.data)
     },[page?.data])
     return (
-        <div className="w-60 z-10 right-0 top-0  h-full min-h-screen bg-[var(--secondary)] border-r  lg:relative">
-            {/*absolute bg-blue-100 right-0 top-0 h-full w-60 lg:relative border-l border-l-blue-300*/}
+        <div className="w-60 z-10 right-0 top-0  h-full bg-background border border-border/50 lg:relative">
+            {/*absolute  right-0 top-0 h-full w-60 lg:relative  */}
             <div className="z-50 ">
                 <div className="p-4">Author</div>
                     <div className="">
                         {   authors &&
                             authors?.data?.map((value,key)=>{
                                 return(
-                                <div className="border-b p-4 bg-[var(--accent)]" onClick={()=>{author?.set(value);language?.set(value?.language)}} key={key}>
-                                    <div className="text-blue-700 flex dark:text-blue-400">{value?.authorId?.name}</div>
-                                    <div className="text-blue-600 text-sm inline dark:text-blue-500">{value?.authorId?.email}</div>
-                                    <span className="p-2 text-red-700 dark:text-red-500">{value?.language}</span>
+                                <div className=" p-4 cursor-pointer hover:bg-muted/20 bg-muted/10 border-b border-border/50" onClick={()=>{author?.set(value);language?.set(value?.language)}} key={key}>
+                                    <div className="text-primary flex text-sm">{value?.authorId?.name}</div>
+                                    <div className="text-accent inline text-sm">{value?.authorId?.email}</div>
+                                    <div className="m-2 p-1 text-[rgb(250,50,50)] text-end inline bg-[rgb(250,50,50)]/10">{value?.language?.toLowerCase()}</div>
                                 </div>)
                             })
                         }

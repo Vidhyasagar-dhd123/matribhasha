@@ -2,9 +2,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 const variants = {
   default:
-    "bg-blue-600 primary-grad primary-grad-hover hover:bg-blue-700 text-white focus:ring-2 focus:ring-blue-300",
+    "bg-primary text-primary-foreground hover:bg-accent focus:ring-2 focus:ring-blue-300 hover:",
   outline:
-    "border border-blue-500 text-blue-500 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-gray-200",
+    "border    hover: focus:ring-2 focus:ring-[var(--accent-hover)]",
 };
 
 export interface ButtonProps
@@ -16,7 +16,7 @@ export function Button({ className, variant = "default", ...props }: ButtonProps
   return (
     <button
       className={cn(
-        "px-4 py-2 rounded-full cursor-pointer text-sm font-medium transition focus:outline-none",
+        "px-4 py-2 rounded-lg cursor-pointer  font-medium transition focus:outline-none",
         variants[variant],
         className
       )}

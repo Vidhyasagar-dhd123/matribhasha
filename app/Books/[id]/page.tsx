@@ -2,19 +2,18 @@
 import { Suspense } from "react";
 import React from "react";
 import { useState,useEffect } from "react";
-import { Edit } from "lucide-react";
-import BookCover from "@/modules/books/components/BookCover";
-import StatsGrid from "@/modules/books/components/StatsGrid";
-import ActionButtons from "@/modules/books/components/ActionButtons";
-import AboutSection from "@/modules/books/components/AboutSection";
-import { Book } from "@/modules/books/utils/books";
+import { Book, BookHeaderType, BookStats } from "@/modules/books/utils/books";
+import { BookHeader } from "@/modules/books/components/BookHeader";
+import BooksStatBar from "@/modules/books/components/BooksStatBar";
+import BookTabs from "@/modules/books/components/BookTabs";
+import { Url } from "next/dist/shared/lib/router/router";
 
 function Loading() {
   return <div className="text-center p-10">Loading book details...</div>;
 }
 
 function ErrorFallback({ error }: { error: string }) {
-  return <div className="text-center p-10 text-red-500">{error}</div>;
+  return <div className="text-center p-10 ">{error}</div>;
 }
 
 function BookDescription({ params }: { params: Promise<{ id: string }> }) {
@@ -38,33 +37,29 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
   if (!book) {
     return <ErrorFallback error="Book not found" />;
   }
-
-  const title = book?.title; // Derived for cleanliness
+    const data:BookStats = {
+        originalLanguage: book.originalLanguage,
+        versions: book.versions,
+        contributors: book.contributors,
+        totalPages: book.pages ? book.pages.length : 0,
+    };
+    const bookHeader:BookHeaderType={
+        title: book.title,
+        author: book.author,
+        reviews: book.reviews,
+        published: book.published,
+        workspaceLink:new URL(`Workspace/${book.uuid}`,window.location.origin),
+        link:new URL(`Read/${book.uuid}`,window.location.origin),
+    };
+    
   return (
-    <section className="min-h-screen flex flex-col items-center py-8">
-      <div className="flex flex-col items-center max-w-6xl w-full px-4">
-        <article className="w-full p-4 bg-[var(--secondary)] mb-4 rounded flex justify-between items-center shadow">
-          <h1 className="text-2xl font-bold capitalize">{title}</h1>
-          <button aria-label="Edit book details">
-            <Edit className="text-[var(--accent-foreground)] hover:text-gray-800" />
-          </button>
-        </article>
-        <article className="mb-5 rounded-2xl flex flex-col md:flex-row justify-center items-center md:items-start md:justify-start gap-6">
-          <BookCover book={book} />
-          <div className="p-6 md:p-10">
-            <Suspense fallback={<Loading />}>
-              <StatsGrid book={book} />
-            </Suspense>
-          </div>
-          <Suspense fallback={<Loading />}>
-            <ActionButtons id={book?.uuid} />
-          </Suspense>
-        </article>
-        <Suspense fallback={<Loading />}>
-          <AboutSection book={book} />
-        </Suspense>
+    <div className="p-4 flex flex-col items-center bg-secondary/40 w-full overflow-x-hidden min-h-screen">
+      <div className="max-w-7xl w-full flex flex-col gap-6">
+        <BookHeader bookHeader={bookHeader}/>
+        <BooksStatBar data={data} />
+        <BookTabs/>
       </div>
-    </section>
+    </div>
   );
 }
 

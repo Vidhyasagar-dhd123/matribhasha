@@ -1,6 +1,6 @@
 
 export interface Book {
-  id: string;
+  _id: string;
   title: string;
   author: string;
   originalLanguage: string;
@@ -11,4 +11,19 @@ export interface Book {
   published: number;
   versions: string[];
   description: string;
+  contributors: number;
+  genre: string;
 }
+
+export interface BookStats extends Pick<Book, 'originalLanguage' |  'versions' | 'contributors' >{
+  totalPages?: number;
+}
+
+
+export interface BookHeaderType extends Pick<Book, 'title' |  'author' | 'reviews'|'published' >{
+  totalPages?: number;
+  workspaceLink: URL;
+  link: URL;
+}
+
+//Edits, Contributors and Version History can be added later

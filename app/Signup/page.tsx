@@ -17,15 +17,15 @@ export default function LoginCard(): JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow w-full max-w-sm">
-        <h1 className="mb-6 text-center text-2xl font-bold">Signup</h1>
+    <div className="min-h-screen  flex items-center justify-center p-4">
+      <div className=" p-8 rounded-xl shadow w-full max-w-sm">
+        <h1 className="mb-6   font-bold">Signup</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
             {/*Username*/}
           <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
+              className="block  font-medium "
             >
               Username
             </label>
@@ -46,7 +46,7 @@ export default function LoginCard(): JSX.Element {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block  font-medium "
             >
               Email
             </label>
@@ -67,7 +67,7 @@ export default function LoginCard(): JSX.Element {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block  font-medium "
             >
               Password
             </label>
@@ -101,14 +101,14 @@ export default function LoginCard(): JSX.Element {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full py-2 px-4 rounded   font-semibold hover: focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Signup
           </button>
         </form>
-        <div className="mt-4 text-sm text-center">
+        <div className="mt-4  ">
           Already registered?{" "}
-          <Link href="/Login" className="text-blue-600 hover:underline">
+          <Link href="/Login" className=" hover:underline">
             Login up
           </Link>
         </div>

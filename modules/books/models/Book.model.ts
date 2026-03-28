@@ -44,6 +44,42 @@ const BookSchema = new mongoose.Schema(
         description:
         {
             type:String,
+        },
+        genre:
+        {
+            type:String,
+        },
+        isbn13:
+        {
+            type:String,
+        },
+
+        uploaded:{
+            type:Boolean,
+            default:false
+        },
+
+        translatedLanguages:
+        [
+            {
+                type:String,
+            }
+        ],
+
+        isTranslated:
+        {
+            type:Boolean,
+            default:false
+        },
+
+        uploadURI:
+        {
+            type:String,
+        },
+
+        coverURI:
+        {
+            type:String,
         }
     },
     {

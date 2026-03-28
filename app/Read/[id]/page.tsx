@@ -25,14 +25,14 @@ const SidebarToggle = ({
 }) => (
   <div
     onClick={onClick}
-    className={`p-1 hover:bg-blue-200 rounded mx-4 flex cursor-pointer ${
+    className={`p-1 rounded mx-4 flex cursor-pointer ${
       align === "left" ? "justify-end" : "justify-start"
     }`}
   >
     {isOpen ? (
-      <OpenIcon className="text-blue-500 hover:text-blue-600" />
+      <OpenIcon className="" />
     ) : (
-      <CloseIcon className="text-red-800 hover:text-blue-600" />
+      <CloseIcon className="" />
     )}
   </div>
 )
@@ -61,7 +61,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             align="right"
           />
         </div>
-      <section className="flex flex-col items-center justify-center bg-background w-full overflow-x-hidden">
+      <section className="flex flex-col items-center justify-center bg-secondary/40 w-full overflow-x-hidden">
         
         {/* Content Area */}
         <div className="flex flex-row justify-between w-full relative overflow-hidden">
@@ -70,19 +70,19 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             initial={{ x: -270 }}
             animate={{ x: leftBarOpen ? 0 : -270 }}
             transition={{ duration: 0.3 }}
-            className="absolute h-full left-0 top-0  bg-white shadow-md z-10"
+            className="absolute h-full left-0 top-0 shadow-md z-10"
           >
             <ChapterList />
           </motion.div>
 
-          <div className="flex-1 m-4">
+          <div className="flex-1">
             <ReadPage />
           </div>
           <motion.div
             initial={{ x: 270 }}
             animate={{ x: rightBarOpen ? 0 : 270 }}
             transition={{ duration: 0.3 }}
-            className="absolute right-0 top-0 h-full bg-white shadow-md z-10"
+            className="absolute right-0 top-0 h-full shadow-md z-10"
           >
             <ReadQueryManager />
           </motion.div>

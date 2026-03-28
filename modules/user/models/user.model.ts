@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
         ],
         bio:{
             type:String,
+        },
+        isBlocked:{
+            type:Boolean,
+            default:false
         }
     },
     {
