@@ -19,7 +19,7 @@ function WorkspaceEditor() {
   }, [content.data?.content, page.data?.pageNumber])
 
   const save = async () => {
-    if (!page.data?.bookUUID || !page.data?.pageNumber) {
+    if (!page.data?.bookUUID || page.data?.pageNumber === undefined || page.data?.pageNumber === null) {
       return
     }
 

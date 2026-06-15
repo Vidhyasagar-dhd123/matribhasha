@@ -4,6 +4,12 @@ import PageVersion from "@/modules/books/models/PageVersion.model"
 import User from "@/modules/user/models/user.model"
 import authenticateUser from "@/lib/auth"
 
+type AuthenticatedUser = {
+    id?: string;
+    _id?: string;
+    role?: string;
+}
+
 
 export async function GET(req:Request,{params}:{params:Promise<{pageNo:string|undefined|null,id:string}>}){
     try
@@ -67,7 +73,7 @@ export async function GET(req:Request,{params}:{params:Promise<{pageNo:string|un
 export async function PUT(req: Request, { params }: { params: Promise<{ pageNo: string | undefined | null; id: string }> }) {
     try {
         await connection()
-        const currentUser = await authenticateUser(req)
+        const currentUser = await authenticateUser(req) as AuthenticatedUser | null
         if (!currentUser) {
             return Response.json({ message: "Unauthorized" }, { status: 401 })
         }

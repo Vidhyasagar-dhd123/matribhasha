@@ -19,8 +19,9 @@ export interface Book {
   uploadURI?: string;
 }
 
-export interface BookStats extends Pick<Book, 'originalLanguage' |  'versions' | 'contributors' >{
+export interface BookStats extends Pick<Book, 'originalLanguage' | 'contributors' >{
   totalPages?: number;
+  versions?: number;
 }
 
 

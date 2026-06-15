@@ -1,5 +1,6 @@
 import { signJWT } from "@/modules/auth/utils/jwt";
 import { hashPassword } from "@/modules/auth/utils/password";
+import connection from "@/lib/database";
 import User from "@/modules/user/models/user.model";
 import { createUser } from "@/modules/user/service/user.services";
 import { NextRequest } from "next/server";
@@ -8,6 +9,7 @@ import { NextRequest } from "next/server";
 export async function POST(req:NextRequest){
     try
     {
+        await connection()
         const {email,username,password} = await req.json()
         if(!email||!username||!password){
             return new Response(JSON.stringify({message:"Some values are missing."}),{status:400})

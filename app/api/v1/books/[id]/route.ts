@@ -10,7 +10,27 @@ export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){
         const {id} = await params
         await connection()
         const RequestedBook = await Book.findOne({uuid:id})
-        return Response.json(RequestedBook,{status:200})
+        if (!RequestedBook) {
+            return Response.json({message:"Book Not Found"},{status:404})
+        }
+
+        const pages = await Page.find({bookUUID:id}).select("_id")
+        const pageIds = pages.map((page) => page._id)
+        const [versionCount, languages, contributors] = await Promise.all([
+            PageVersion.countDocuments({pageId:{$in:pageIds}}),
+            PageVersion.distinct("language",{pageId:{$in:pageIds}}),
+            PageVersion.distinct("authorId",{pageId:{$in:pageIds}}),
+        ])
+
+        const book = RequestedBook.toObject()
+        return Response.json({
+            ...book,
+            pages: book.pages?.length ? book.pages : pageIds,
+            versions: Array.from({length: versionCount}, (_, index) => String(index + 1)),
+            versionCount,
+            contributors: contributors.filter(Boolean).length,
+            translatedLanguages: languages.filter(Boolean),
+        },{status:200})
     }
     catch(err)
     {

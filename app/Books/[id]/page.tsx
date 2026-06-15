@@ -114,7 +114,7 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
   }
     const data:BookStats = {
         originalLanguage: book.originalLanguage,
-        versions: book.versions,
+        versions: stats?.versionCount || 0,
         contributors: book.contributors,
         totalPages: stats?.totalPages,
     };

@@ -1,137 +1,294 @@
 "use client"
 
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { useState } from "react"
+import { BookOpen, Heart, RefreshCcw, Send, Sparkles } from "lucide-react"
+import { getRequestHeaders } from "@/modules/shared/utils/request"
+import { useAuth } from "@/modules/auth/contexts/authContext"
+import { Book } from "@/modules/books/utils/books"
 
-const stories = [
-  {
-    title: "A train through the monsoon",
-    language: "Hindi + English",
-    excerpt:
-      "A commuter story about rain, rhythm, and the way a single scene can feel different when read in two languages.",
-  },
-  {
-    title: "River songs at dusk",
-    language: "Bengali + Odia",
-    excerpt:
-      "A short cultural sketch designed for slow scrolling, letting readers move through the translation one beat at a time.",
-  },
-  {
-    title: "Market day memories",
-    language: "Tamil + Malayalam",
-    excerpt:
-      "A reflective slice-of-life story that pairs regional vocabulary with a calm reading flow for multilingual learning.",
-  },
-]
+type VivarPost = {
+  _id: string
+  selectedText: string
+  caption?: string
+  bookUUID: string
+  bookTitle: string
+  pageNumber: number
+  language: string
+  likesCount: number
+  createdAt: string
+  authorId?: {
+    name?: string
+    email?: string
+  }
+}
 
-const VivarPage = () => {
-  const [activeStory, setActiveStory] = useState(stories[0])
+export default function VivarPage() {
+  const { user } = useAuth()
+  const [books, setBooks] = useState<Book[]>([])
+  const [posts, setPosts] = useState<VivarPost[]>([])
+  const [selectedBook, setSelectedBook] = useState("")
+  const [pageNumber, setPageNumber] = useState("1")
+  const [language, setLanguage] = useState("")
+  const [selectedText, setSelectedText] = useState("")
+  const [caption, setCaption] = useState("")
+  const [status, setStatus] = useState<string | null>(null)
+  const [loadingPosts, setLoadingPosts] = useState(true)
+  const [posting, setPosting] = useState(false)
+
+  const activeBook = useMemo(
+    () => books.find((book) => book.uuid === selectedBook),
+    [books, selectedBook]
+  )
+
+  useEffect(() => {
+    const loadBooks = async () => {
+      const response = await fetch("/api/v1/books")
+      if (response.ok) {
+        const data = await response.json()
+        setBooks(data)
+        if (data[0]) {
+          setSelectedBook(data[0].uuid)
+          setLanguage(data[0].originalLanguage || "")
+        }
+      }
+    }
+
+    loadBooks()
+    loadPosts()
+  }, [])
+
+  const loadPosts = async () => {
+    setLoadingPosts(true)
+    const response = await fetch("/api/v1/vivar")
+    if (response.ok) {
+      setPosts(await response.json())
+    }
+    setLoadingPosts(false)
+  }
+
+  const publishPost = async () => {
+    if (!user) {
+      setStatus("Please log in before posting.")
+      return
+    }
+
+    if (!selectedBook || !pageNumber || !language || !selectedText.trim()) {
+      setStatus("Book, page, language, and selected text are required.")
+      return
+    }
+
+    setPosting(true)
+    setStatus(null)
+
+    try {
+      const response = await fetch("/api/v1/vivar", {
+        method: "POST",
+        headers: getRequestHeaders(),
+        body: JSON.stringify({
+          bookUUID: selectedBook,
+          pageNumber,
+          language,
+          selectedText,
+          caption,
+        }),
+      })
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Unable to publish Vivar post.")
+      }
+
+      setPosts((current) => [data, ...current])
+      setSelectedText("")
+      setCaption("")
+      setStatus("Posted to Vivar.")
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Unable to publish Vivar post.")
+    } finally {
+      setPosting(false)
+    }
+  }
+
+  const toggleLike = async (postId: string) => {
+    if (!user) {
+      setStatus("Please log in to like posts.")
+      return
+    }
+
+    const response = await fetch(`/api/v1/vivar/${postId}/like`, {
+      method: "POST",
+      headers: getRequestHeaders(),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      setPosts((current) =>
+        current.map((post) =>
+          post._id === postId ? { ...post, likesCount: data.likesCount } : post
+        )
+      )
+    }
+  }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.12),transparent_42%),linear-gradient(180deg,#f8fafc_0%,#eefbf5_100%)] px-6 py-16 sm:px-8 lg:px-12">
-      <section className="mx-auto max-w-6xl space-y-10">
-        <div className="max-w-3xl space-y-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-700">Vivar</p>
-          <h1 className="text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Scroll-based short stories for multilingual reading
-          </h1>
-          <p className="text-lg leading-8 text-slate-600">
-            Vivar turns reading into a calm, vertical experience. Each story is written to support language discovery, cultural context, and easy translation while keeping the pace natural on mobile and desktop.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/Books"
-              className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Explore Books
-            </Link>
-            <Link
-              href="/Signup"
-              className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
-            >
-              Join the Platform
-            </Link>
-          </div>
-        </div>
-
-        <div className="rounded-[2rem] border border-emerald-100 bg-white/80 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ecfeff_100%)] px-4 py-6 sm:px-6 lg:px-8">
+      <section className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[380px_1fr]">
+        <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+          <div className="flex items-center gap-3">
+            <div className="rounded-full bg-cyan-50 p-2 text-cyan-700">
+              <Sparkles size={20} />
+            </div>
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-600">Featured story</p>
-              <h2 className="mt-2 text-2xl font-semibold text-slate-950">{activeStory.title}</h2>
-              <p className="mt-2 text-sm text-slate-600">{activeStory.language}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {stories.map((story) => (
-                <button
-                  key={story.title}
-                  onClick={() => setActiveStory(story)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${activeStory.title === story.title ? "bg-slate-950 text-white" : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"}`}
-                >
-                  {story.title}
-                </button>
-              ))}
-            </div>
-          </div>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-600">
-            {activeStory.excerpt} The layout keeps the reading rhythm slow and vertical, which is useful for multilingual comparison and cultural context.
-          </p>
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-white/70 bg-white/80 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur">
-            <div className="space-y-4">
-              <div className="rounded-3xl bg-slate-950 p-6 text-white">
-                <p className="text-sm uppercase tracking-[0.3em] text-emerald-300">Reading mode</p>
-                <h2 className="mt-3 text-2xl font-semibold">Made for quiet scrolling</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-300">
-                  Story cards are arranged to feel like a feed, but with stronger language cues, translation-friendly spacing, and a focus on culture-first storytelling.
-                </p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  ["Multilingual", "Alternate between source and translated text."],
-                  ["Culture first", "Stories can reflect regional voices and traditions."],
-                  ["Mobile friendly", "Designed for vertical reading and long-form focus."],
-                  ["Learning ready", "Supports repetition, comparison, and vocabulary building."],
-                ].map(([title, detail]) => (
-                  <div key={title} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div className="text-sm font-semibold text-slate-950">{title}</div>
-                    <div className="mt-1 text-sm leading-6 text-slate-600">{detail}</div>
-                  </div>
-                ))}
-              </div>
+              <h1 className="text-2xl font-semibold text-slate-950">Vivar</h1>
+              <p className="text-sm text-slate-600">Post a selected book excerpt.</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            {stories.map((story, index) => (
-              <article
-                key={story.title}
-                onClick={() => setActiveStory(story)}
-                className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
-                style={{ animationDelay: `${index * 120}ms` }}
+          <div className="mt-5 space-y-4">
+            <label className="block text-sm text-slate-700">
+              <span className="mb-2 block font-medium">Book</span>
+              <select
+                value={selectedBook}
+                onChange={(event) => {
+                  const book = books.find((item) => item.uuid === event.target.value)
+                  setSelectedBook(event.target.value)
+                  setLanguage(book?.originalLanguage || "")
+                }}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 outline-none focus:border-cyan-400"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-600">Story {index + 1}</p>
-                    <h3 className="mt-2 text-2xl font-semibold text-slate-950">{story.title}</h3>
+                {books.map((book) => (
+                  <option key={book.uuid} value={book.uuid}>
+                    {book.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block text-sm text-slate-700">
+                <span className="mb-2 block font-medium">Page</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={pageNumber}
+                  onChange={(event) => setPageNumber(event.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 outline-none focus:border-cyan-400"
+                />
+              </label>
+              <label className="block text-sm text-slate-700">
+                <span className="mb-2 block font-medium">Language</span>
+                <input
+                  value={language}
+                  onChange={(event) => setLanguage(event.target.value)}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 outline-none focus:border-cyan-400"
+                />
+              </label>
+            </div>
+
+            <label className="block text-sm text-slate-700">
+              <span className="mb-2 block font-medium">Selected text</span>
+              <textarea
+                value={selectedText}
+                onChange={(event) => setSelectedText(event.target.value)}
+                className="min-h-40 w-full resize-none rounded-lg border border-slate-200 bg-white px-3 py-3 leading-7 outline-none focus:border-cyan-400"
+                placeholder="Paste the selected passage here..."
+              />
+            </label>
+
+            <label className="block text-sm text-slate-700">
+              <span className="mb-2 block font-medium">Caption</span>
+              <input
+                value={caption}
+                onChange={(event) => setCaption(event.target.value)}
+                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-3 outline-none focus:border-cyan-400"
+                placeholder="Optional note"
+              />
+            </label>
+
+            <button
+              onClick={publishPost}
+              disabled={posting || !selectedText.trim()}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Send size={16} />
+              {posting ? "Posting..." : "Post to Vivar"}
+            </button>
+
+            {status ? <p className="text-sm text-slate-600">{status}</p> : null}
+            {activeBook ? (
+              <Link href={`/Read/${activeBook.uuid}`} className="inline-flex items-center gap-2 text-sm font-medium text-cyan-700 hover:text-cyan-900">
+                <BookOpen size={16} />
+                Open selected book
+              </Link>
+            ) : null}
+          </div>
+        </aside>
+
+        <div className="min-h-[80vh]">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-slate-950">Post scroller</h2>
+              <p className="text-sm text-slate-600">Newest selections appear first.</p>
+            </div>
+            <button
+              onClick={loadPosts}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              <RefreshCcw size={16} />
+              Refresh
+            </button>
+          </div>
+
+          <div className="snap-y space-y-5">
+            {loadingPosts ? (
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
+                Loading Vivar posts...
+              </div>
+            ) : posts.length ? (
+              posts.map((post) => (
+                <article
+                  key={post._id}
+                  className="snap-start rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-cyan-700">{post.bookTitle}</p>
+                      <h3 className="mt-1 text-lg font-semibold text-slate-950">
+                        Page {post.pageNumber} · {post.language}
+                      </h3>
+                      <p className="mt-1 text-sm text-slate-500">
+                        {post.authorId?.name || "Matribhasha reader"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => toggleLike(post._id)}
+                      className="inline-flex items-center gap-2 rounded-lg border border-rose-100 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100"
+                    >
+                      <Heart size={16} />
+                      {post.likesCount || 0}
+                    </button>
                   </div>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    {story.language}
-                  </span>
-                </div>
-                <p className="mt-4 text-sm leading-7 text-slate-600">{story.excerpt}</p>
-                <div className="mt-4 inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                  Tap to feature this story
-                </div>
-              </article>
-            ))}
+
+                  <blockquote className="mt-5 border-l-4 border-cyan-400 pl-4 text-xl leading-9 text-slate-900">
+                    {post.selectedText}
+                  </blockquote>
+
+                  {post.caption ? (
+                    <p className="mt-4 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-600">
+                      {post.caption}
+                    </p>
+                  ) : null}
+                </article>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
+                No Vivar posts yet.
+              </div>
+            )}
           </div>
         </div>
       </section>
     </main>
   )
 }
-
-export default VivarPage
