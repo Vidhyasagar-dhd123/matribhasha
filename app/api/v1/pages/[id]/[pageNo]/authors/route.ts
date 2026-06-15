@@ -3,12 +3,13 @@ import Page from "@/modules/books/models/Pages.model";
 import PageVersion from "@/modules/books/models/PageVersion.model";
 
 
-export async function GET(req:Request,{params}:{params:Promise<{id:string,pageNo:number}>}){
+export async function GET(req:Request,{params}:{params:Promise<{id:string,pageNo:string}>}){
     try
     {
         await connection()
         const {id,pageNo} = await params
-        const page = await Page.findOne({bookUUID:id,pageNumber:pageNo})
+        const pageNumber = Number(pageNo)
+        const page = await Page.findOne({bookUUID:id,pageNumber})
         if(!page)
         {
             console.log("Page Not Found")

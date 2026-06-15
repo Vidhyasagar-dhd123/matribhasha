@@ -1,13 +1,20 @@
 import { useEffect, useState } from "react"
-import { useBooks } from "../Contexts/BooksContext";
 import { useUsers } from "../Contexts/UserContext";
-import { deleteUser } from "../Services/users";
+import { deleteUser, toggleBlockUser, updateUser } from "../Services/users";
 
 export function UserDetailsPanel() {
-  const { users, selectedUser } = useUsers()
+  const { selectedUser, refreshUsers, setSelectedUser } = useUsers()
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [bio, setBio] = useState("")
+  const [languages, setLanguages] = useState("")
 
   useEffect(() => {
-  }, []);
+    setName(selectedUser?.name || "")
+    setEmail(selectedUser?.email || "")
+    setBio(selectedUser?.bio || "")
+    setLanguages((selectedUser?.languages || []).map((item) => item.name).filter(Boolean).join(", "))
+  }, [selectedUser])
 
   return (
     <div className="w-[420px] border-l border-border bg-card p-6 overflow-y-auto">
@@ -24,17 +31,23 @@ export function UserDetailsPanel() {
           Detailed Author Profiles
         </h3>
 
-        <div
-          className="w-full border border-input rounded-md px-3 py-2">
-            {selectedUser?.name || "Select a user"}
-        </div>
+        <input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          className="w-full border border-input rounded-md px-3 py-2"
+          placeholder="Name"
+        />
 
-        <div
-          className="w-full border border-input rounded-md px-3 py-2">
-            {selectedUser?.email || "Email"}
-        </div>
+        <input
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          className="w-full border border-input rounded-md px-3 py-2"
+          placeholder="Email"
+        />
 
         <textarea
+          value={bio}
+          onChange={(event) => setBio(event.target.value)}
           placeholder="Description"
           className="w-full border border-input rounded-md px-3 py-2"
         />
@@ -45,15 +58,12 @@ export function UserDetailsPanel() {
 
       <div className="grid grid-cols-3 gap-3 mb-6">
 
-        <select className="border border-input rounded-md px-3 py-2">
-          <option>Genre</option>
-        </select>
-
-        <select className="border border-input rounded-md px-3 py-2">
-          <option>EN</option>
-          <option>ES</option>
-          <option>FR</option>
-        </select>
+        <input
+          value={languages}
+          onChange={(event) => setLanguages(event.target.value)}
+          className="border border-input rounded-md px-3 py-2 col-span-3"
+          placeholder="Languages separated by commas"
+        />
 
       </div>
 
@@ -63,11 +73,33 @@ export function UserDetailsPanel() {
 
       <div className="flex gap-3 mt-6">
 
-        <button className="flex-1 bg-primary text-primary-foreground py-2 rounded-md">
+        <button className="flex-1 bg-primary text-primary-foreground py-2 rounded-md" onClick={async () => {
+          if (!selectedUser) return;
+          await updateUser(selectedUser._id, {
+            name,
+            email,
+            bio,
+            languages: languages.split(",").map((item) => ({ name: item.trim() })).filter((item) => item.name),
+          });
+          await refreshUsers();
+        }}>
           Save Detailed Changes
         </button>
 
-        <button className="flex-1 border border-border rounded-md py-2 bg-red-600/80 text-white" onClick={() => selectedUser && deleteUser(selectedUser._id)}>
+        <button className="flex-1 border border-border rounded-md py-2 bg-amber-600/80 text-white" onClick={async () => {
+          if (!selectedUser) return;
+          await toggleBlockUser(selectedUser._id);
+          await refreshUsers();
+        }}>
+          {selectedUser?.isBlocked ? "UNBLOCK" : "BLOCK"}
+        </button>
+
+        <button className="flex-1 border border-border rounded-md py-2 bg-red-600/80 text-white" onClick={async () => {
+          if (!selectedUser) return;
+          await deleteUser(selectedUser._id);
+          setSelectedUser(null)
+          await refreshUsers();
+        }}>
           DELETE
         </button>
 

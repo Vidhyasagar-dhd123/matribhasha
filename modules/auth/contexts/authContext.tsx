@@ -23,6 +23,7 @@ export const AuthProvider:React.FC<{children:React.ReactNode}>=({children})=>{
         {
             const data = await fetch("/api/v1/login",{
                 method:"POST",
+                headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({email,password})
             })
             if(data.ok)
@@ -45,12 +46,13 @@ export const AuthProvider:React.FC<{children:React.ReactNode}>=({children})=>{
         try{
             const data = await fetch("/api/v1/signup",{
                 method:"POST",
+                headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({email,password,username})
             })
 
             if(data.ok){
                 const {user,token} = await data.json()
-                localStorage.setItem("user",user)
+                localStorage.setItem("user",JSON.stringify(user))
                 setUser(user)
                 localStorage.setItem("token",token)
                 setToken(token)
@@ -65,7 +67,9 @@ export const AuthProvider:React.FC<{children:React.ReactNode}>=({children})=>{
 
     const logout = () =>{
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUser(null);
+        setToken(null);
     };
 
     const value:AuthContextType = {user, login, logout, loading,token,signup}

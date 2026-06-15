@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useBooks } from "../Contexts/BooksContext";
 import { deleteBook, updateBook } from "../Services/books";
+import AddPage from "./AddPage";
 
 export function BookDetailsPanel() {
   const [bookName, setBookName] = useState("");
@@ -9,8 +10,7 @@ export function BookDetailsPanel() {
   const [genre, setGenre] = useState("");
   const [isbn, setIsbn] = useState("");
   const [language, setLanguage] = useState("");
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const { selectedBook } = useBooks();
+  const { selectedBook, refreshBooks, setSelectedBook } = useBooks();
 
   useEffect(() => {
     if (selectedBook) {
@@ -18,7 +18,7 @@ export function BookDetailsPanel() {
       setAuthorName(selectedBook.author);
       setMetadata(selectedBook.description);
       setGenre(selectedBook.genre);
-      setIsbn(selectedBook.isbn);
+      setIsbn(selectedBook.isbn || selectedBook.isbn13 || "");
       setLanguage(selectedBook.originalLanguage);
     }
       console.log("Selected Book:", selectedBook);
@@ -60,9 +60,12 @@ export function BookDetailsPanel() {
 
       <div className="grid grid-cols-3 gap-3 mb-6">
 
-        <select className="border border-input rounded-md px-3 py-2">
-          <option>Genre</option>
-        </select>
+        <input
+          placeholder="Genre"
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          className="border border-input rounded-md px-3 py-2"
+        />
 
         <input
           placeholder="ISBN"
@@ -71,11 +74,12 @@ export function BookDetailsPanel() {
           className="border border-input rounded-md px-3 py-2"
         />
 
-        <select className="border border-input rounded-md px-3 py-2">
-          <option>EN</option>
-          <option>ES</option>
-          <option>FR</option>
-        </select>
+        <input
+          placeholder="Language"
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="border border-input rounded-md px-3 py-2"
+        />
 
       </div>
 
@@ -107,6 +111,8 @@ export function BookDetailsPanel() {
 
       </div>
 
+      {selectedBook ? <AddPage bookUuid={selectedBook.uuid} /> : null}
+
       {/* Buttons */}
 
       <div className="flex gap-3 mt-6">
@@ -117,15 +123,22 @@ export function BookDetailsPanel() {
             author: authorName,
             description: metadata,
             genre: genre,
-            isbn: isbn,
-            originalLanguage: language
+            isbn13: isbn,
+            originalLanguage: language,
+          }).then(async () => {
+            await refreshBooks();
           });
         }}>
 
           Save Detailed Changes
         </button>
 
-        <button className="flex-1 border border-border rounded-md py-2 bg-red-600/80 text-white" onClick={() => selectedBook && deleteBook(selectedBook.uuid)}>
+        <button className="flex-1 border border-border rounded-md py-2 bg-red-600/80 text-white" onClick={async () => {
+          if (!selectedBook) return;
+          await deleteBook(selectedBook.uuid)
+          setSelectedBook(null)
+          await refreshBooks()
+        }}>
           DELETE
         </button>
 

@@ -10,10 +10,12 @@ export const OuterContainer = ({
     children,
     type,
     id,
+    onSave,
 }: {
     children: React.ReactNode;
     id: string;
     type: string;
+    onSave?: () => void | Promise<void>;
 }) => {
     const { page } = useReader();
     const [fontSize, setFontSize] = React.useState(16);
@@ -79,8 +81,8 @@ export const OuterContainer = ({
                             +
                         </Button>
                     </div>
-                    {type === "edit" && (
-                        <Button variant="default" onClick={handleSave}>Save Changes</Button>
+                    {type === "edit" && onSave && (
+                        <Button variant="default" onClick={onSave}>Save Changes</Button>
                     )}
                 </div>
             </Card>
@@ -117,8 +119,3 @@ export const ReferencePage = ({ id }: { id: string }) => {
     }, [page?.data, author?.data, language?.data]);
     return <p className="mt-2">{content.data?.content}</p>;
 };
-
-const handleSave = async () => {
-    // Implement save functionality here
-    alert("Save functionality is not implemented yet.");
-}

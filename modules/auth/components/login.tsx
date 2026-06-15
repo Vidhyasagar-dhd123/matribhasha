@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 export default function LoginCard(): JSX.Element {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const {user, login, logout} = useAuth()
+  const {user, login} = useAuth()
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
@@ -20,7 +20,7 @@ export default function LoginCard(): JSX.Element {
     if(user){
         router.push("/")
     }
-  })
+  },[router,user])
 
   return (
     <div className="min-h-screen  flex items-center justify-center p-4">

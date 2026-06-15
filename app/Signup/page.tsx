@@ -2,19 +2,30 @@
 
 import { useAuth } from "@/modules/auth/contexts/authContext";
 import Link from "next/link";
-import { useState, JSX } from "react";
+import { useEffect, useState, JSX } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginCard(): JSX.Element {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("")
   const [confirmPassword, setConfirmPassword] = useState<string>("")
   const [password, setPassword] = useState<string>("");
-  const {signup} = useAuth()
+  const {signup, user} = useAuth()
+  const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      return;
+    }
     signup(email,password,username)
   };
+
+  useEffect(() => {
+    if (user) {
+      router.push("/")
+    }
+  }, [router, user])
 
   return (
     <div className="min-h-screen  flex items-center justify-center p-4">
@@ -102,6 +113,7 @@ export default function LoginCard(): JSX.Element {
           <button
             type="submit"
             className="w-full py-2 px-4 rounded   font-semibold hover: focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={password !== confirmPassword}
           >
             Signup
           </button>

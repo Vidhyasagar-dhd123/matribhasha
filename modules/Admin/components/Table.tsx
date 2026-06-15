@@ -1,27 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { useBooks } from "../Contexts/BooksContext";
-import { Book } from "@/modules/books/utils/books";
 
 
 export function BooksTable() {
-  const [books, setBooks] = useState<Book[]>([] as Book[]);
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const { selectedBook, setSelectedBook } = useBooks();
-
-  useEffect(() => {
-    // Fetch books data from the API
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch(`${baseURL}/api/v1/books`);
-        const data = await response.json();
-        setBooks(data);
-      } catch (error) {
-        console.error("Error fetching books:", error);
-      }
-    };
-
-    fetchBooks();
-  }, []);
+  const { books, selectedBook, setSelectedBook, loading } = useBooks();
 
   return (
     <table className="w-full text-sm">
@@ -42,7 +24,7 @@ export function BooksTable() {
 
       <tbody>
 
-        {books.map((book) => (
+        {!loading && books.map((book) => (
 
           <tr
             key={book._id}
@@ -66,6 +48,12 @@ export function BooksTable() {
           </tr>
 
         ))}
+
+        {!loading && !books.length ? (
+          <tr>
+            <td colSpan={4} className="p-4 text-center text-muted-foreground">No books found.</td>
+          </tr>
+        ) : null}
 
       </tbody>
     </table>

@@ -3,11 +3,12 @@ import Book from "@/modules/books/models/Book.model";
 import Page from "@/modules/books/models/Pages.model";
 
 
-export async function GET(req:Request,{params}:{params:Promise<{id:string, pageNo:number}>}){
+export async function GET(req:Request,{params}:{params:Promise<{id:string, pageNo:string}>}){
     try
     {
         await connection()
         const {id,pageNo} = await params
+        const pageNumber = Number(pageNo)
         console.log(id)
         const book = await Book.findOne({uuid:id})
         if(!id && !pageNo)
@@ -20,8 +21,8 @@ export async function GET(req:Request,{params}:{params:Promise<{id:string, pageN
             console.log("Book Not Found")
             return Response.json({message:"Book Not Found"},{status:404})
         }
-        const next_pages = await Page.find({bookId:book._id,pageNumber:{$gte:pageNo}}).sort({pageNumber:1}).limit(5)
-        const prev_pages = await Page.find({bookId:book._id,pageNumber:{$lt:pageNo}}).sort({pageNumber:-1}).limit(5)
+        const next_pages = await Page.find({bookId:book._id,pageNumber:{$gte:pageNumber}}).sort({pageNumber:1}).limit(5)
+        const prev_pages = await Page.find({bookId:book._id,pageNumber:{$lt:pageNumber}}).sort({pageNumber:-1}).limit(5)
 
         const paginated_pages = [...prev_pages.reverse(),...next_pages]
 

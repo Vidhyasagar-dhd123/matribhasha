@@ -9,7 +9,6 @@ export async function POST(req:NextRequest) {
   try{
     await connection()
     const {email,password} = await req.json();
-    console.log(email,password)
     if(!email||!password)
       return new Response(JSON.stringify({Message:"Invalid Request"}),{status:400})
     
@@ -24,9 +23,15 @@ export async function POST(req:NextRequest) {
     if(!isMatch)
       return new Response(JSON.stringify({message:"Wrong Password"}),{status:400})
 
-    const token = signJWT({id:userExists._id, username:userExists.name})
-    return new Response(JSON.stringify({ user:{id:userExists._id,username:userExists.name,email:userExists.email},token }), {
-      status: 201,
+    if (userExists.isBlocked) {
+      return new Response(JSON.stringify({message:"Account is blocked"}),{status:403})
+    }
+
+    const role = userExists.role || "user"
+    const userId = String(userExists._id)
+    const token = signJWT({id:userId, username:userExists.name, role})
+    return new Response(JSON.stringify({ user:{id:userId,username:userExists.name,email:userExists.email,role},token }), {
+      status: 200,
       headers: { "Content-Type": "application/json" },
     });
   }

@@ -14,8 +14,8 @@ export default function ProfilePage({
   const isMe = user?.username === username;
 
   return (
-    <div>
-      <ProfileCard></ProfileCard>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.12),transparent_34%),linear-gradient(180deg,#f8fafc_0%,#ecfeff_100%)] px-4 py-8 sm:px-6 lg:px-8">
+      <ProfileCard username={username} isMe={isMe} />
     </div>
   );
 }

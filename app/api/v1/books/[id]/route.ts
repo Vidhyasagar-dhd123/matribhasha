@@ -2,6 +2,7 @@ import Book from "@/modules/books/models/Book.model";
 import connection from "@/lib/database";
 import Page from "@/modules/books/models/Pages.model";
 import PageVersion from "@/modules/books/models/PageVersion.model";
+import authenticateUser, { isAdminUser } from "@/lib/auth";
 
 export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){
     try
@@ -21,6 +22,11 @@ export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){
 export async function DELETE(req:Request,{params}:{params:Promise<{id:string}>}){
     try
     {
+        const currentUser = await authenticateUser(req)
+        if (!isAdminUser(currentUser)) {
+            return Response.json({ message: "Unauthorized" }, { status: 401 })
+        }
+
         const {id} = await params
         await connection()
         const book = await Book.findOneAndDelete({uuid:id})
@@ -43,6 +49,11 @@ export async function DELETE(req:Request,{params}:{params:Promise<{id:string}>})
 export async function PUT(req:Request,{params}:{params:Promise<{id:string}>}){
     try
     {
+        const currentUser = await authenticateUser(req)
+        if (!isAdminUser(currentUser)) {
+            return Response.json({ message: "Unauthorized" }, { status: 401 })
+        }
+
         const {id} = await params
         const body = await req.json()
         await connection()

@@ -22,9 +22,11 @@ export async function POST(req:NextRequest){
 
         const user = await createUser({username,email,password:hashedPass})
 
-        const token = signJWT({id:user._id, username:user.name})
+        const userId = String(user._id)
+        const role = user.role || "user"
+        const token = signJWT({id:userId, username:user.name, role})
 
-        return new Response(JSON.stringify({user:{id:user._id,username:user.name},token}),
+        return new Response(JSON.stringify({user:{id:userId,username:user.name,email:user.email,role},token}),
         {status:201,headers:{'Content-Type':'application/json'}})
     }
     catch(err)

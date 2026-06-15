@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useBooks } from "../Contexts/BooksContext";
 import { createBook } from "../Services/books";
 import { headingToId } from "@/lib/utils";
+import UploadDoc from "./UploadDoc";
 
 export function BookCreatePanel() {
   const [bookName, setBookName] = useState("");
@@ -10,7 +11,9 @@ export function BookCreatePanel() {
   const [genre, setGenre] = useState("");
   const [isbn, setIsbn] = useState("");
   const [language, setLanguage] = useState("");
-  const { selectedBook, setSelectedBook } = useBooks();
+  const [coverURI, setCoverURI] = useState("");
+  const [uploadURI, setUploadURI] = useState("");
+  const { selectedBook, setSelectedBook, refreshBooks } = useBooks();
 
   const refresh = () => {
     setBookName("")
@@ -19,6 +22,8 @@ export function BookCreatePanel() {
     setGenre("")
     setIsbn("")
     setLanguage("")
+    setCoverURI("")
+    setUploadURI("")
   }
 
   useEffect(() => {
@@ -54,13 +59,9 @@ export function BookCreatePanel() {
           className="w-full border border-input rounded-md px-3 py-2"
         />
 
-        <div className="w-full h-48 border border-dashed border-border rounded-md flex items-center justify-center text-sm text-muted-foreground">
-          <p>Upload Book Cover</p>
-        </div>
+        <UploadDoc label="Upload Book Cover" folder="matribhasha/covers" accept="image/*" onUploaded={setCoverURI} />
 
-        <div className="w-full h-48 border border-dashed border-border rounded-md flex items-center justify-center text-sm text-muted-foreground">
-          <p>Upload Book File</p>
-        </div>
+        <UploadDoc label="Upload Book File" folder="matribhasha/books" accept="application/pdf,.epub,.txt" onUploaded={setUploadURI} />
 
       </div>
 
@@ -91,13 +92,19 @@ export function BookCreatePanel() {
       <div className="flex gap-3 mt-6">
 
         <button className="flex-1 bg-primary text-primary-foreground py-2 rounded-md" onClick={async () => {
-          await createBook({
+          const created = await createBook({
             title: bookName,
             author: authorName,
             description: metadata,
             uuid:headingToId(bookName),
-            originalLanguage:language
+            originalLanguage:language,
+            coverURI,
+            uploadURI,
           });
+          await refreshBooks();
+          if (created?._id) {
+            setSelectedBook(created);
+          }
           refresh();
         }}>
           Create

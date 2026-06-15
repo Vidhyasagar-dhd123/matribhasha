@@ -7,12 +7,16 @@ export interface Book {
   reviews: string;
   pages: string[]|null;
   uuid:string;
-  isbn: string;
+  isbn?: string;
+  isbn13?: string;
   published: number;
   versions: string[];
   description: string;
   contributors: number;
   genre: string;
+  translatedLanguages?: string[];
+  coverURI?: string;
+  uploadURI?: string;
 }
 
 export interface BookStats extends Pick<Book, 'originalLanguage' |  'versions' | 'contributors' >{
