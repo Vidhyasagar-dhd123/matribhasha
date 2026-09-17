@@ -1,10 +1,22 @@
 "use client"
 
 import { Search } from "lucide-react"
-import { useUsers } from "../Contexts/UserContext"
+import { useUsers } from "../contexts/UserContext"
 
 export function UserToolbar() {
-  const { searchQuery, setSearchQuery, setPage, loading, totalCount } = useUsers()
+  const {
+    searchQuery,
+    setSearchQuery,
+    roleFilter,
+    setRoleFilter,
+    statusFilter,
+    setStatusFilter,
+    sortOrder,
+    setSortOrder,
+    setPage,
+    loading,
+    totalCount
+  } = useUsers()
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -17,31 +29,54 @@ export function UserToolbar() {
             setSearchQuery(event.target.value)
             setPage(1)
           }}
-          className="w-full pl-9 pr-3 py-2 rounded-md border border-input bg-background"
-          placeholder="Enter Username, Email..."
+          className="w-full pl-9 pr-3 py-2 rounded-lg border border-input bg-background text-sm"
+          placeholder="Search by name, username, email..."
           disabled={loading}
         />
       </div>
 
-      <select className="border border-input rounded-md px-3 py-2 bg-background">
-        <option>Status</option>
-        <option>All</option>
-        <option>Published</option>
-        <option>Draft</option>
+      <select
+        value={roleFilter}
+        onChange={(e) => {
+          setRoleFilter(e.target.value)
+          setPage(1)
+        }}
+        className="border border-input rounded-lg px-3 py-2 bg-background text-sm font-medium"
+      >
+        <option value="all">All Roles</option>
+        <option value="admin">Admins Only</option>
+        <option value="user">Users Only</option>
       </select>
 
-      <select className="border border-input rounded-md px-3 py-2 bg-background">
-        <option>Genre</option>
-        <option>All</option>
+      <select
+        value={statusFilter}
+        onChange={(e) => {
+          setStatusFilter(e.target.value)
+          setPage(1)
+        }}
+        className="border border-input rounded-lg px-3 py-2 bg-background text-sm font-medium"
+      >
+        <option value="all">All Status</option>
+        <option value="active">Active Only</option>
+        <option value="blocked">Blocked Only</option>
       </select>
 
-      <select className="border border-input rounded-md px-3 py-2 bg-background">
-        <option>Sort</option>
-        <option>Newest</option>
-        <option>Oldest</option>
+      <select
+        value={sortOrder}
+        onChange={(e) => {
+          setSortOrder(e.target.value)
+          setPage(1)
+        }}
+        className="border border-input rounded-lg px-3 py-2 bg-background text-sm font-medium"
+      >
+        <option value="newest">Sort: Newest</option>
+        <option value="oldest">Sort: Oldest</option>
+        <option value="name">Sort: Name (A-Z)</option>
       </select>
 
-      <span className="text-sm text-muted-foreground">{totalCount} users</span>
+      <span className="text-xs text-muted-foreground font-semibold px-2">
+        {totalCount} {totalCount === 1 ? "user" : "users"}
+      </span>
 
     </div>
   )

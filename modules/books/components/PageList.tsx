@@ -1,31 +1,42 @@
-"use client"
+"use client";
 
-import React, { useEffect } from "react"
-import { useReader } from "../contexts/read.context"
+import React from "react";
+import { useReader } from "../contexts/read.context";
 
-const PageList = ({...props}:React.HTMLAttributes<HTMLDivElement>) =>{
-    const {page,pages,authors,language} = useReader()
+const PageList = ({ className = "", ...props }: React.HTMLAttributes<HTMLDivElement>) => {
+  const { page, pages } = useReader();
 
-    useEffect(()=>{
-        //check whether language is in author.data.language
-        if (authors?.data && language.data && !authors.data.some(author => author.language === language.data)) {
-            language.set(page?.data?.originalLanguage||"en");
-            window.alert("Page is not available in your language showing results in " + page?.data?.originalLanguage+" instead.");
-        }
-    },[pages,authors,language])
+  const pagesArray = pages?.data || [];
+  if (pagesArray.length === 0) {
+    return null;
+  }
 
-    return (
-        <aside className="w-full bg-background" {...props}>
-                <div className="w-full overflow-x-auto   min-w-[100px] flex items-center overflow-y-auto justify-center border   ">
-                    {
-                        pages?.data &&
-                        pages?.data.map((page_i,key)=>{
-                            return <div onClick={()=>page.set(page_i)} className="cursor-pointer border   px-2 py-1  " key={key}>{page_i?.pageNumber}</div>
-                        })
-                    }
-                </div>
-        </aside>
-    )
-}
+  return (
+    <aside className={`w-full bg-card/60 backdrop-blur border-t border-border py-2 px-4 ${className}`} {...props}>
+      <div className="mx-auto max-w-5xl flex items-center justify-start gap-1.5 overflow-x-auto py-1 scrollbar-thin">
+        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mr-2 shrink-0">
+          Pages ({pagesArray.length}):
+        </span>
+        {pagesArray.map((p, idx) => {
+          const isActive = page?.data?.pageNumber === p.pageNumber;
+          return (
+            <button
+              key={p._id || idx}
+              onClick={() => page.set(p)}
+              className={`flex h-8 min-w-[32px] px-2 items-center justify-center rounded-lg text-xs font-semibold transition shrink-0 ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-sm scale-105"
+                  : "bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+              title={`Jump to Page ${p.pageNumber}`}
+            >
+              {p.pageNumber}
+            </button>
+          );
+        })}
+      </div>
+    </aside>
+  );
+};
 
-export default PageList
+export default PageList;

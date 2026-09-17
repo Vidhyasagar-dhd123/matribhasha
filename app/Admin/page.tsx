@@ -1,8 +1,8 @@
 "use client";
 
-import AdminLinkProvider from "@/modules/Admin/components/AdminLinkProvider";
-import AdminSidebar from "@/modules/Admin/components/AdminSidebar";
-import SidebarContainer from "@/modules/shared/components/SidebarContainer"
+import AdminLinkProvider from "@/modules/admin/components/AdminLinkProvider";
+import AdminSidebar from "@/modules/admin/components/AdminSidebar";
+import SidebarContainer from "@/modules/shared/components/SidebarContainer";
 import { useAuth } from "@/modules/auth/contexts/authContext";
 
 

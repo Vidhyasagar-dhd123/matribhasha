@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { Book } from "@/modules/books/utils/books";
-import { getBooks } from "../Services/books";
+import { getBooks } from "../services/books";
 
 interface BooksContextType {
     books: Book[];

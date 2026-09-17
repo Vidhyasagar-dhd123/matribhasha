@@ -2,6 +2,7 @@ import connection from "@/lib/database"
 import Page from "@/modules/books/models/Pages.model"
 import PageVersion from "@/modules/books/models/PageVersion.model"
 import User from "@/modules/user/models/user.model"
+import ReadingProgress from "@/modules/user/models/ReadingProgress.model"
 import authenticateUser from "@/lib/auth"
 
 type AuthenticatedUser = {
@@ -158,10 +159,28 @@ export async function PUT(
                 new: true,
                 upsert: true,
             }
-        ).populate({
-            path: "authorId pageId",
-            select: "name email pageNumber bookUUID -_id",
-        });
+        ).populate("authorId", "name email username").populate("pageId", "pageNumber bookUUID");
+
+        // Record translator progress
+        try {
+            await ReadingProgress.findOneAndUpdate(
+                {
+                    userId: authorId,
+                    bookUUID: id,
+                    role: "translator",
+                },
+                {
+                    $set: {
+                        pageNumber,
+                        language,
+                        updatedAt: new Date(),
+                    },
+                },
+                { upsert: true }
+            );
+        } catch (progressErr) {
+            console.error("Error saving translator progress:", progressErr);
+        }
 
         return Response.json(updatedPage, {
             status: 200,

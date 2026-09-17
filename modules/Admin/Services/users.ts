@@ -1,11 +1,13 @@
 import { BASE_URL } from "@/modules/shared/utils/config"
 import { getRequestHeaders } from "@/modules/shared/utils/request"
 
-export const getUsers = async (filter: { search?: string; page?: number; limit?: number; sort?: string } = {}) => {
+export const getUsers = async (filter: { search?: string; role?: string; status?: string; page?: number; limit?: number; sort?: string } = {}) => {
     try {
         const params = new URLSearchParams()
 
         if (filter.search) params.set("search", filter.search)
+        if (filter.role && filter.role !== "all") params.set("role", filter.role)
+        if (filter.status && filter.status !== "all") params.set("status", filter.status)
         if (filter.page) params.set("page", String(filter.page))
         if (filter.limit) params.set("limit", String(filter.limit))
         if (filter.sort) params.set("sort", filter.sort)

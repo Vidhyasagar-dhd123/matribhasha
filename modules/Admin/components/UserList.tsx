@@ -1,6 +1,6 @@
 "use client";
 
-import { useUsers } from "../Contexts/UserContext";
+import { useUsers } from "../contexts/UserContext";
 import { User } from "@/modules/user/types/auth";
 
 export function UserList() {

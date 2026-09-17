@@ -1,17 +1,38 @@
 import connection from "@/lib/database";
-import { getCurrentUser } from "@/lib/current-user";
+import authenticateUser from "@/lib/auth";
 import Book from "@/modules/books/models/Book.model";
 import Page from "@/modules/books/models/Pages.model";
 import PageVersion from "@/modules/books/models/PageVersion.model";
 import VivarPost from "@/modules/vivar/models/VivarPost.model";
-import { NextRequest } from "next/server";
+import { z } from "zod";
 
-export async function GET() {
+const VivarCreateSchema = z.object({
+  selectedText: z.string().min(1, "Selected text is required"),
+  caption: z.string().optional().default(""),
+  bookUUID: z.string().min(1, "Book UUID is required"),
+  pageNumber: z.coerce.number().int().min(0, "Page number must be 0 or greater"),
+  language: z.string().min(1, "Language is required"),
+});
+
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const bookUUID = searchParams.get("bookUUID");
+    const language = searchParams.get("language");
+    const limit = Math.min(Number(searchParams.get("limit")) || 20, 50);
+    const skip = Number(searchParams.get("skip")) || 0;
+
     await connection();
-    const posts = await VivarPost.find()
+
+    const filter: Record<string, unknown> = {};
+    if (bookUUID) filter.bookUUID = bookUUID;
+    if (language) filter.language = language;
+
+    const posts = await VivarPost.find(filter)
       .sort({ createdAt: -1 })
-      .populate({ path: "authorId", select: "name email -_id" })
+      .skip(skip)
+      .limit(limit)
+      .populate({ path: "authorId", select: "name username email _id" })
       .lean();
 
     return Response.json(
@@ -22,57 +43,68 @@ export async function GET() {
       { status: 200 }
     );
   } catch (err) {
-    console.log(err);
-    return Response.json({ message: "Something Went Wrong" }, { status: 500 });
+    console.error("Error fetching Vivar posts:", err);
+    return Response.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    await connection();
-    const user = await getCurrentUser(req);
-
-    if (!user) {
+    const currentUser = await authenticateUser(req);
+    if (!currentUser) {
       return Response.json({ message: "Authentication required" }, { status: 401 });
     }
 
-    const { selectedText, caption, bookUUID, pageNumber, language } = await req.json();
-    const numericPageNo = Number(pageNumber);
+    const json = await req.json();
+    const parsed = VivarCreateSchema.safeParse(json);
 
-    if (!selectedText || !bookUUID || Number.isNaN(numericPageNo) || !language) {
+    if (!parsed.success) {
       return Response.json(
-        { message: "Selected text, book, page, and language are required" },
+        { message: "Invalid Vivar post data", errors: parsed.error.format() },
         { status: 400 }
       );
     }
 
-    const [book, page] = await Promise.all([
-      Book.findOne({ uuid: bookUUID }),
-      Page.findOne({ bookUUID, pageNumber: numericPageNo }),
-    ]);
+    await connection();
+    const { selectedText, caption, bookUUID, pageNumber, language } = parsed.data;
 
-    if (!book || !page) {
-      return Response.json({ message: "Book or page not found" }, { status: 404 });
+    let book = await Book.findOne({ uuid: bookUUID });
+    if (!book) {
+      book = await Book.findById(bookUUID).catch(() => null);
     }
 
-    const sourceVersion = await PageVersion.findOne({
-      pageId: page._id,
-      language,
-    }).sort({ updatedAt: -1 });
+    if (!book) {
+      return Response.json({ message: "Book not found" }, { status: 404 });
+    }
+
+    const page = await Page.findOne({ bookUUID: book.uuid, pageNumber });
+
+    let sourceVersion = null;
+    if (page) {
+      sourceVersion = await PageVersion.findOne({
+        pageId: page._id,
+        language,
+      }).sort({ updatedAt: -1 });
+    }
+
+    const authorUserId = currentUser.id || (currentUser as { _id?: string })._id;
 
     const post = await VivarPost.create({
       selectedText,
       caption,
-      bookUUID,
+      bookUUID: book.uuid,
       bookTitle: book.title,
-      pageNumber: numericPageNo,
+      pageNumber,
       language,
       sourceVersionId: sourceVersion?._id,
-      authorId: user._id,
+      authorId: authorUserId,
       likes: [],
     });
 
-    const populatedPost = await post.populate({ path: "authorId", select: "name email -_id" });
+    const populatedPost = await post.populate({
+      path: "authorId",
+      select: "name username email _id",
+    });
 
     return Response.json(
       {
@@ -82,7 +114,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (err) {
-    console.log(err);
-    return Response.json({ message: "Something Went Wrong" }, { status: 500 });
+    console.error("Error creating Vivar post:", err);
+    return Response.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }

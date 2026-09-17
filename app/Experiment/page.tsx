@@ -1,6 +1,6 @@
 "use server";
 
-import Input from "@/modules/Admin/components/Input";
+import Input from "@/modules/admin/components/Input";
 
 
 export default async function Page() {

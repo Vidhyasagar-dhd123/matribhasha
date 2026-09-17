@@ -1,11 +1,12 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import BooksPanel from "./BooksPanel";
-import { BooksProvider } from "../Contexts/BooksContext";
+import { BooksProvider } from "../contexts/BooksContext";
 import UserPanel from "./UserPanel";
-import { UsersProvider } from "../Contexts/UserContext";
+import { UsersProvider } from "../contexts/UserContext";
 import AdminDashboardPanel from "./AdminDashboardPanel";
 import AdminSettingsPanel from "./AdminSettingsPanel";
+import PdfIntelligencePanel from "./PdfIntelligencePanel";
 
 
 const AdminLinkProvider = () => {
@@ -30,6 +31,8 @@ const AdminLinkProvider = () => {
                         <BooksPanel />
                     </BooksProvider>
                 );
+            case 'pdf-ai':
+                return <PdfIntelligencePanel />;
             default:
                 return <AdminDashboardPanel />;
         }

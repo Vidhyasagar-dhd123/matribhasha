@@ -13,6 +13,8 @@ export async function GET(req:Request){
         await connection()
         const searchParams = new URL(req.url).searchParams
         const search = searchParams.get("search")?.trim() || ""
+        const role = searchParams.get("role")?.trim() || ""
+        const status = searchParams.get("status")?.trim() || ""
         const sort = searchParams.get("sort") || "newest"
         const page = Math.max(1, Number(searchParams.get("page") || 1))
         const limit = Math.max(1, Math.min(50, Number(searchParams.get("limit") || 10)))
@@ -24,11 +26,21 @@ export async function GET(req:Request){
             filter.$or = [
                 { name: regex },
                 { email: regex },
-                { role: regex },
+                { username: regex },
             ]
         }
 
-        const query = User.find(filter, "_id name email isBlocked role languages bio createdAt updatedAt")
+        if (role && role !== "all") {
+            filter.role = role
+        }
+
+        if (status === "active") {
+            filter.isBlocked = false
+        } else if (status === "blocked") {
+            filter.isBlocked = true
+        }
+
+        const query = User.find(filter, "_id name username email isBlocked role languages bio createdAt updatedAt")
         if (sort === "oldest") {
             query.sort({ createdAt: 1 })
         } else if (sort === "name") {

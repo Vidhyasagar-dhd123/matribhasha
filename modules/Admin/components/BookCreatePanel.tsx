@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { useBooks } from "../Contexts/BooksContext";
-import { createBook } from "../Services/books";
+import { useBooks } from "../contexts/BooksContext";
+import { createBook } from "../services/books";
 import { headingToId } from "@/lib/utils";
 import UploadDoc from "./UploadDoc";
 

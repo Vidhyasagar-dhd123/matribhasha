@@ -6,6 +6,7 @@ export interface Book {
   originalLanguage: string;
   reviews: string;
   pages: string[]|null;
+  totalPages?: number;
   uuid:string;
   isbn?: string;
   isbn13?: string;
@@ -14,6 +15,17 @@ export interface Book {
   description: string;
   contributors: number;
   genre: string;
+  rating?: number;
+  reviewsCount?: number;
+  editions?: {
+    language: string;
+    authorId?: string;
+    authorName?: string;
+    authorUsername?: string;
+    translatedPages: number;
+    completionPercent: number;
+    lastUpdated?: string;
+  }[];
   translatedLanguages?: string[];
   coverURI?: string;
   uploadURI?: string;
@@ -29,6 +41,10 @@ export interface BookHeaderType extends Pick<Book, 'title' |  'author' | 'review
   totalPages?: number;
   workspaceLink: URL;
   link: URL;
+  coverURI?: string;
+  genre?: string;
+  description?: string;
+  originalLanguage?: string;
 }
 
 //Edits, Contributors and Version History can be added later

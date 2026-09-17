@@ -5,7 +5,7 @@ import { BooksToolbar } from "./BooksToolbar"
 import { BooksTable } from "./Table"
 import { Pagination } from "./Pagination"
 import { BookDetailsPanel } from "./BookDetailsPanel"
-import { useBooks } from "../Contexts/BooksContext"
+import { useBooks } from "../contexts/BooksContext"
 import { BookCreatePanel } from "./BookCreatePanel"
 
 export default function BooksDashboard() {

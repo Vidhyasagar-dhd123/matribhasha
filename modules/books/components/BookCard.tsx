@@ -1,117 +1,76 @@
-import { Card, CardHeader, CardContent, CardTitle } from "@/modules/shared/components/cards";
-import IndImage from "@/public/WallpaperKey.jpg"
-import LangImg from "@/public/Indlang.jpg"
-import { Star,BookOpenIcon } from "lucide-react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { BookOpen, Globe } from "lucide-react";
+import { Book } from "../utils/books";
 
-interface Book {
-  id: number;
-  thumbnail: object;
-  name: string;
-  description: string;
-  rating: number;
-  language: string;
+interface BookCardProps {
+  book: Partial<Book> & { title: string; originalLanguage: string; author: string; uuid: string };
 }
 
-const books: Book[] = [
-  {
-    id: 1,
-    thumbnail: IndImage,
-    name: "The Indic Chronicles",
-    description: "A historical exploration of ancient Indic literature and translations.",
-    rating: 4.5,
-    language: "Sanskrit",
-  },
-  {
-    id: 2,
-    thumbnail: LangImg,
-    name: "Lost in Translation",
-    description: "A modern anthology showcasing the challenges of translation.",
-    rating: 4.2,
-    language: "English",
-  },
-];
-
-function BookCard() {
-return (
-  <div className="mx-auto max-w-7xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 py-8">
-    {books.map((book) => (
-      <Card
-        key={book.id}
-        className="
-          relative overflow-hidden rounded-xl
-          bg-card text-card-foreground
-          border border-border
-          transition-shadow
-          hover:shadow-md
-        "
-      >
-        {/* Cover */}
-        <Image
-          src={IndImage}
-          alt={book.name}
-          width={300}
-          height={200}
-          className="
-            h-48 w-full object-cover
-            border-b border-border
-          "
-        />
-
-        {/* Header */}
-        <CardHeader className="px-4 pt-3 pb-2">
-          <CardTitle className="text-base font-semibold leading-snug">
-            {book.name}
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {book.language}
-          </p>
-        </CardHeader>
-
-        {/* Footer */}
-        <CardContent className="px-4 pb-4 pt-2">
-          <div className="flex items-center justify-between">
-            
-            {/* Rating */}
-            <div className="flex items-center gap-1 text-muted-foreground">
-              {Array.from({ length: 5 }).map((_, idx) => (
-                <Star
-                  key={idx}
-                  size={16}
-                  className={
-                    idx < Math.round(book.rating)
-                      ? "fill-primary text-primary"
-                      : "text-muted-foreground"
-                  }
-                />
-              ))}
-              <span className="ml-2 text-sm">
-                {book.rating.toFixed(1)}
-              </span>
-            </div>
-
-            {/* Read Action */}
-            <Link
-              href={`/Books/${book.name.replaceAll(" ", "-")}`}
-              className="
-                inline-flex items-center gap-1
-                text-sm font-medium
-                text-muted-foreground
-                hover:text-foreground
-                transition-colors
-              "
-            >
-              <BookOpenIcon className="h-4 w-4" />
-              Read
-            </Link>
+export function BookCard({ book }: BookCardProps) {
+  return (
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+      {/* Cover / Header */}
+      <div className="relative h-44 w-full overflow-hidden bg-muted">
+        {book.coverURI ? (
+          <Image
+            src={book.coverURI}
+            alt={book.title}
+            fill
+            className="object-cover transition duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-primary/10 via-muted to-background p-4 text-center">
+            <Globe className="h-8 w-8 text-primary/40 mb-2" />
+            <span className="text-sm font-semibold text-foreground line-clamp-2">{book.title}</span>
           </div>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-);
+        )}
+        <span className="absolute bottom-2 left-2 rounded-md bg-background/90 px-2 py-0.5 text-xs font-semibold text-foreground backdrop-blur-sm shadow-xs uppercase">
+          {book.originalLanguage}
+        </span>
+        {book.genre && (
+          <span className="absolute top-2 right-2 rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-semibold text-primary-foreground backdrop-blur-sm uppercase">
+            {book.genre}
+          </span>
+        )}
+      </div>
 
+      {/* Content */}
+      <div className="flex flex-1 flex-col justify-between p-4">
+        <div>
+          <h3 className="text-base font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+            {book.title}
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground italic">
+            by {book.author}
+          </p>
+          {book.description && (
+            <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
+              {book.description}
+            </p>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3">
+          <Link
+            href={`/books/${book.uuid}`}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+          >
+            <BookOpen size={13} />
+            Explore Book
+          </Link>
+          <Link
+            href={`/workspace/${book.uuid}`}
+            className="rounded-lg bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground hover:bg-muted transition"
+          >
+            Translate
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default BookCard
+export default BookCard;

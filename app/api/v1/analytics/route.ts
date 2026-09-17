@@ -4,9 +4,15 @@ import Page from "@/modules/books/models/Pages.model";
 import PageVersion from "@/modules/books/models/PageVersion.model";
 import User from "@/modules/user/models/user.model";
 import VivarPost from "@/modules/vivar/models/VivarPost.model";
+import authenticateUser, { isAdminUser } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const currentUser = await authenticateUser(req);
+    if (!isAdminUser(currentUser)) {
+      return Response.json({ message: "Unauthorized. Admin access required." }, { status: 403 });
+    }
+
     await connection();
 
     const [

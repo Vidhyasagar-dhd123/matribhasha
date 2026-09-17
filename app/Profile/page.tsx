@@ -10,10 +10,10 @@ const Profile = () =>{
             return
         }
         if(user){
-            router.push("/Profile/"+user?.username)
+            router.push("/profile/" + (user?.username || ""))
         }
         else
-            router.push("/Login")
+            router.push("/login")
     },[loading, router, user])
     return (<>
         </>)

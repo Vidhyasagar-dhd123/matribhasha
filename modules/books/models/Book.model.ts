@@ -33,12 +33,12 @@ const BookSchema = new mongoose.Schema(
 
         chapters:
         [
-            {type:mongoose.Schema.Types.ObjectId, ref:"Chapters"}
+            {type:mongoose.Schema.Types.ObjectId, ref:"Chapter"}
         ],
 
         pages:
         [
-            {type:mongoose.Schema.Types.ObjectId,ref:"Pages"}
+            {type:mongoose.Schema.Types.ObjectId,ref:"Page"}
         ],
 
         description:

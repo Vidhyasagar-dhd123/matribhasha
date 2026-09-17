@@ -4,12 +4,22 @@ const userSchema = new mongoose.Schema(
     {
         name:{
             type:String,
-            required:true
+            required:true,
+            trim:true
+        },
+        username:{
+            type:String,
+            unique:true,
+            sparse:true,
+            trim:true,
+            lowercase:true
         },
         email:{
             type:String,
             unique:true,
-            required:true
+            required:true,
+            trim:true,
+            lowercase:true
         },
         password:{
             type:String,
@@ -30,6 +40,7 @@ const userSchema = new mongoose.Schema(
         ],
         bio:{
             type:String,
+            default:""
         },
         isBlocked:{
             type:Boolean,
@@ -41,6 +52,6 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-const User = mongoose.models.User||mongoose.model("User",userSchema)
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User

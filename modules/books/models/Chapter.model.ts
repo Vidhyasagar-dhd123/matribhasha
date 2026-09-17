@@ -34,5 +34,5 @@ const ChapterSchema = new mongoose.Schema(
     }
 )
 
-const Chapter = mongoose.model("Chapter", ChapterSchema)|| mongoose.models.Chapter;
+const Chapter = mongoose.models.Chapter || mongoose.model("Chapter", ChapterSchema);
 export default Chapter;

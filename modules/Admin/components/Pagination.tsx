@@ -1,6 +1,6 @@
 "use client"
 
-import { useBooks } from "../Contexts/BooksContext"
+import { useBooks } from "../contexts/BooksContext"
 
 export function Pagination() {
   const { page, setPage, totalPages, totalCount, loading } = useBooks()
