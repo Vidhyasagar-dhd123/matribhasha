@@ -39,8 +39,8 @@ export interface BookStats extends Pick<Book, 'originalLanguage' | 'contributors
 
 export interface BookHeaderType extends Pick<Book, 'title' |  'author' | 'reviews'|'published' >{
   totalPages?: number;
-  workspaceLink: URL;
-  link: URL;
+  workspaceLink: string;
+  link: string;
   coverURI?: string;
   genre?: string;
   description?: string;

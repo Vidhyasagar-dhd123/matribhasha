@@ -144,8 +144,8 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
     genre: book.genre,
     description: book.description,
     originalLanguage: book.originalLanguage,
-    workspaceLink: new URL(`/workspace/${book.uuid}`, typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"),
-    link: new URL(`/read/${book.uuid}`, typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"),
+    workspaceLink: `/workspace/${book.uuid}`,
+    link: `/read/${book.uuid}`,
   };
 
   return (
