@@ -93,20 +93,26 @@ export class CloudinaryStorageAdapter implements StorageAdapter {
 }
 
 export function getStorageAdapter(): StorageAdapter {
-  const driver = process.env.STORAGE_DRIVER?.toLowerCase();
+  const driver = process.env.STORAGE_DRIVER?.toLowerCase() || "cloudinary";
 
   const hasCloudinary =
     process.env.CLOUDINARY_CLOUD_NAME &&
     process.env.CLOUDINARY_API_KEY &&
     process.env.CLOUDINARY_API_SECRET;
 
-  if (driver === "cloudinary" && hasCloudinary) {
+  if (driver === "cloudinary") {
+    if (!hasCloudinary) {
+      throw new Error(
+        "Cloudinary storage is enabled but CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET are not configured"
+      );
+    }
+
     return new CloudinaryStorageAdapter();
   }
 
-  if (driver === "local" || !hasCloudinary) {
+  if (driver === "local") {
     return new LocalStorageAdapter();
   }
 
-  return new CloudinaryStorageAdapter();
+  throw new Error(`Unsupported storage driver: ${driver}`);
 }
