@@ -32,9 +32,9 @@ export async function GET(
       return Response.json({ message: "Book Not Found" }, { status: 404 });
     }
 
-    const pages = await Page.find({ bookUUID: id }).select("_id pageNumber");
+    const pages = await Page.find({ bookUUID: id }).select("_id pageNumber").sort({ pageNumber: 1 });
     const pageIds = pages.map((page) => page._id);
-    const totalPageCount = pages.length || RequestedBook.totalPages || 1;
+    const totalPageCount = pages.length || RequestedBook.totalPages || 0;
 
     const [editionsData, languages, contributors, reviewAggregation] = await Promise.all([
       PageVersion.aggregate([
@@ -109,7 +109,9 @@ export async function GET(
     return Response.json(
       {
         ...book,
-        pages: book.pages?.length ? book.pages : pageIds,
+        // Page documents represent the original book. PageVersion documents
+        // are translations and must not affect the book's page count.
+        pages: pageIds,
         totalPages: totalPageCount,
         editions: editionsData,
         versions: editionsData.map((e) => `${e.language || "Edition"} (${e.completionPercent}%)`),

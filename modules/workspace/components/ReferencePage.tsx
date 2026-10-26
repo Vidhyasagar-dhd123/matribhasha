@@ -166,7 +166,7 @@ export const ReferencePage = ({ id }: { id: string }) => {
       const query = params.toString() ? `?${params.toString()}` : "";
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/pages/${page?.data?.bookUUID || id}/${pageNum}${query}`);
+        const res = await fetch(`/api/v1/books/${page?.data?.bookUUID || id}/pages/${pageNum}${query}`);
         if (res.ok && isMounted) {
           const data = await res.json();
           setRefContent(data?.content || "No translation recorded for this version.");

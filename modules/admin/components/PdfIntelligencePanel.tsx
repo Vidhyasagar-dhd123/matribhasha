@@ -172,7 +172,7 @@ export default function PdfIntelligencePanel() {
   const fetchStats = async () => {
     setStatsLoading(true);
     try {
-      const res = await fetch("/api/v1/admin/indic-trans/stats", {
+      const res = await fetch("/api/v1/admin/translation-usage", {
         headers: getRequestHeaders(false),
       });
       if (res.ok) {
@@ -190,7 +190,7 @@ export default function PdfIntelligencePanel() {
   const fetchDocuments = async () => {
     setDocsLoading(true);
     try {
-      const res = await fetch("/api/v1/admin/pdf", {
+      const res = await fetch("/api/v1/admin/documents", {
         headers: getRequestHeaders(false),
       });
       if (res.ok) {
@@ -208,7 +208,7 @@ export default function PdfIntelligencePanel() {
   // Top up token balance (Dummy adapter)
   const handleTopup = async () => {
     try {
-      const res = await fetch("/api/v1/admin/indic-trans/stats", {
+      const res = await fetch("/api/v1/admin/translation-usage", {
         method: "POST",
         headers: getRequestHeaders(false),
       });
@@ -257,7 +257,7 @@ export default function PdfIntelligencePanel() {
 
     try {
       const headers = getRequestHeaders(false) as Record<string, string>;
-      const res = await fetch("/api/v1/admin/pdf", {
+      const res = await fetch("/api/v1/admin/documents", {
         method: "POST",
         headers: {
           Authorization: headers.Authorization || "",
@@ -299,8 +299,8 @@ export default function PdfIntelligencePanel() {
 
     try {
       const [pagesRes, transRes] = await Promise.all([
-        fetch(`/api/v1/admin/pdf/${docId}/pages?all=true`, { headers: getRequestHeaders(false) }),
-        fetch(`/api/v1/admin/pdf/${docId}/translate?lang=${targetLang}&all=true`, { headers: getRequestHeaders(false) }),
+        fetch(`/api/v1/admin/documents/${docId}/pages?all=true`, { headers: getRequestHeaders(false) }),
+        fetch(`/api/v1/admin/documents/${docId}/translations?lang=${targetLang}&all=true`, { headers: getRequestHeaders(false) }),
       ]);
 
       let pList: ExtractedPage[] = [];
@@ -340,7 +340,7 @@ export default function PdfIntelligencePanel() {
   // Load or translate page
   const loadPageTranslation = async (docId: number | string, pageNumber: number, lang: string) => {
     try {
-      const res = await fetch(`/api/v1/admin/pdf/${docId}/translate?lang=${lang}&page=${pageNumber}`, {
+      const res = await fetch(`/api/v1/admin/documents/${docId}/translations?lang=${lang}&page=${pageNumber}`, {
         headers: getRequestHeaders(false),
       });
       if (res.ok) {
@@ -368,7 +368,7 @@ export default function PdfIntelligencePanel() {
     const docId = selectedDoc.id || selectedDoc.document_id;
 
     try {
-      const res = await fetch(`/api/v1/admin/pdf/${docId}/translate`, {
+      const res = await fetch(`/api/v1/admin/documents/${docId}/translations`, {
         method: "POST",
         headers: getRequestHeaders(true),
         body: JSON.stringify({
@@ -405,7 +405,7 @@ export default function PdfIntelligencePanel() {
     const docId = selectedDoc.id || selectedDoc.document_id;
 
     try {
-      const res = await fetch(`/api/v1/admin/pdf/${docId}/translate`, {
+      const res = await fetch(`/api/v1/admin/documents/${docId}/translations`, {
         method: "POST",
         headers: getRequestHeaders(true),
         body: JSON.stringify({
@@ -419,7 +419,7 @@ export default function PdfIntelligencePanel() {
       if (!res.ok) throw new Error(data?.message || "Batch translation failed");
 
       // Reload translations
-      const transRes = await fetch(`/api/v1/admin/pdf/${docId}/translate?lang=${targetLang}&all=true`, {
+      const transRes = await fetch(`/api/v1/admin/documents/${docId}/translations?lang=${targetLang}&all=true`, {
         headers: getRequestHeaders(false),
       });
       if (transRes.ok) {
@@ -450,7 +450,7 @@ export default function PdfIntelligencePanel() {
     if (!selectedDoc) return;
     const docId = selectedDoc.id || selectedDoc.document_id;
     try {
-      const res = await fetch(`/api/v1/admin/pdf/${docId}/pages`, {
+      const res = await fetch(`/api/v1/admin/documents/${docId}/pages`, {
         method: "POST",
         headers: getRequestHeaders(true),
         body: JSON.stringify({ page_number: pageNumber }),
@@ -505,7 +505,7 @@ export default function PdfIntelligencePanel() {
     };
 
     try {
-      const res = await fetch(`/api/v1/admin/pdf/${docId}/publish`, {
+      const res = await fetch(`/api/v1/admin/documents/${docId}/publication`, {
         method: "POST",
         headers: getRequestHeaders(true),
         body: JSON.stringify(payload),

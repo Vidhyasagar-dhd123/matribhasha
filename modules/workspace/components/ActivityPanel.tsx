@@ -36,7 +36,7 @@ export const ActivityPanel = () => {
     if (!user) return;
     const fetchDashboard = async () => {
       try {
-        const res = await fetch("/api/v1/users/dashboard", {
+        const res = await fetch("/api/v1/users/me/activity", {
           headers: getRequestHeaders(),
         });
         if (res.ok) {

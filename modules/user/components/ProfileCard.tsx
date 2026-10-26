@@ -65,7 +65,7 @@ const ProfileCard = ({ username, isMe }: ProfileCardProps) => {
     const loadProfile = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/v1/users/profile/${username}`);
+        const res = await fetch(`/api/v1/profiles/${username}`);
         if (res.ok) {
           const data = await res.json();
           setProfileData(data);
@@ -84,7 +84,7 @@ const ProfileCard = ({ username, isMe }: ProfileCardProps) => {
     setSavingBio(true);
     setBioSaved(false);
     try {
-      const res = await fetch("/api/v1/users/profile", {
+      const res = await fetch("/api/v1/profiles/me", {
         method: "PUT",
         headers: getRequestHeaders(true),
         body: JSON.stringify({ bio }),

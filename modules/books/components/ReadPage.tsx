@@ -8,9 +8,8 @@ import { Sparkles, X, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 const ReadPage = () => {
-  const { content, page, book, author, language } = useReader();
+  const { content, page, book, language } = useReader();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
 
   // Text selection for quote to Vivar Reel
   const [selectedText, setSelectedText] = useState("");
@@ -21,40 +20,6 @@ const ReadPage = () => {
   const [vivarSuccess, setVivarSuccess] = useState(false);
   const [vivarError, setVivarError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let isMounted = true;
-    const getPageVersion = async () => {
-      if (!page?.data?.bookUUID || page?.data?.pageNumber === undefined) return;
-      setLoading(true);
-
-      const params = new URLSearchParams();
-      if (author?.data?.authorId?.email) params.append("author", author.data.authorId.email);
-      if (language?.data) params.append("language", language.data);
-
-      const query = params.toString() ? `?${params.toString()}` : "";
-      try {
-        const data = await fetch(
-          `/api/v1/pages/${page.data.bookUUID}/${page.data.pageNumber}${query}`
-        );
-        if (data.ok && isMounted) {
-          const requested_page = await data.json();
-          content.set(requested_page);
-        } else if (isMounted) {
-          content.set(null);
-        }
-      } catch (err) {
-        console.error("Error fetching page:", err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    getPageVersion();
-    return () => {
-      isMounted = false;
-    };
-  }, [page?.data?.pageNumber, page?.data?.bookUUID, author?.data, language?.data]);
-
   // Auto-track reading progress for authenticated user
   useEffect(() => {
     const bookUUID = page?.data?.bookUUID;
@@ -63,7 +28,7 @@ const ReadPage = () => {
 
     const timer = setTimeout(async () => {
       try {
-        await fetch("/api/v1/users/progress", {
+        await fetch("/api/v1/users/me/reading-progress", {
           method: "POST",
           headers: getRequestHeaders(true),
           body: JSON.stringify({
@@ -109,7 +74,7 @@ const ReadPage = () => {
     setVivarError(null);
 
     try {
-      const res = await fetch("/api/v1/vivar", {
+      const res = await fetch("/api/v1/vivars", {
         method: "POST",
         headers: getRequestHeaders(),
         body: JSON.stringify({
@@ -167,8 +132,8 @@ const ReadPage = () => {
       )}
 
       {/* Main Book Reader Sheet */}
-      {!loading && (
-        <div className="min-h-[78vh] w-full max-w-4xl p-8 sm:p-12 md:p-16 flex flex-col justify-between text-justify leading-relaxed bg-card text-card-foreground border border-border/80 rounded-2xl shadow-lg relative my-2">
+      {!content.loading && (
+        <div className="min-h-[78vh] max-h-[78vh] overflow-y-auto w-full max-w-4xl p-8 sm:p-12 md:p-16 flex flex-col justify-between text-justify leading-relaxed bg-card text-card-foreground border border-border/80 rounded-2xl shadow-lg relative my-2">
           {/* Header */}
           <div className="mb-6 flex items-center justify-between text-xs text-muted-foreground border-b border-border/40 pb-3">
             <span className="font-semibold text-foreground/80">{book?.data?.title}</span>
@@ -178,7 +143,7 @@ const ReadPage = () => {
           </div>
 
           {/* Book Content */}
-          <div className="grow w-full py-4 text-base sm:text-lg md:text-xl font-serif leading-loose tracking-wide first-letter:text-4xl first-letter:font-bold first-letter:mr-2 select-text whitespace-pre-wrap text-foreground">
+          <div className="grow w-full py-4 text-base sm:text-lg md:text-xl font-serif leading-loose tracking-wide first-letter:text-4xl first-letter:font-bold first-letter:mr-2 select-text text-foreground">
             {content?.data?.content || "No translation available for this page in the selected language."}
           </div>
 
@@ -192,7 +157,7 @@ const ReadPage = () => {
         </div>
       )}
 
-      {loading && (
+      {content.loading && (
         <div className="flex h-96 items-center justify-center text-lg text-muted-foreground gap-3">
           <Loader2 className="h-6 w-6 animate-spin text-primary" />
           <span>Loading page...</span>

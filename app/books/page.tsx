@@ -62,23 +62,9 @@ const BooksPage = () => {
             <article className="mx-auto flex w-full max-w-7xl flex-col gap-6">
 
                 {/* Header card */}
-                <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                        <div className="max-w-xl space-y-1">
-                            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">Library</p>
-                            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                                Find books in any language
-                            </h1>
-                            <p className="text-sm leading-7 text-muted-foreground">
-                                Search by title, author, genre, or language. Open any book to read or start translating.
-                            </p>
-                        </div>
-                        <div className="rounded-xl bg-foreground px-4 py-2.5 text-sm font-semibold text-background">
-                            {totalCount} books
-                        </div>
-                    </div>
+                <div className="rounded-2xl border border-border bg-card shadow-sm flex flex-row">
 
-                    <div className="mt-5 flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3">
+                    <div className="grow flex items-center gap-3 rounded-xl bg-background px-4 py-3">
                         <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
                         <Input
                             value={query}
@@ -86,6 +72,11 @@ const BooksPage = () => {
                             className="border-0 bg-transparent p-0 shadow-none focus-visible:ring-0 text-sm"
                             placeholder="Search books, authors, genres, languages…"
                         />
+                    </div>
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                        <div className="rounded-xl bg-card px-4 py-2.5 text-sm font-semibold text-foreground">
+                            {totalCount} books
+                        </div>
                     </div>
                 </div>
 

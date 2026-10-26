@@ -110,7 +110,7 @@ const ActivityTab = () => {
 
             <div className="mt-5 grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-border bg-muted/40 p-3.5 text-center">
-                <div className="text-2xl font-bold text-foreground">{book?.data?.totalPages || book?.data?.pages?.length || 0}</div>
+                <div className="text-2xl font-bold text-foreground">{book?.data?.totalPages || 0}</div>
                 <div className="text-[11px] text-muted-foreground uppercase font-semibold mt-0.5">Pages</div>
               </div>
               <div className="rounded-xl border border-border bg-muted/40 p-3.5 text-center">

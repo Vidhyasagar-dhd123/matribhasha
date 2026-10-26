@@ -12,7 +12,7 @@ function StatsGrid({ book }: { book: Book }) {
         <p className=" ">Stars</p>
       </div>
       <div className="p-4 shadow  rounded-xl flex flex-col items-center hover:shadow-lg transition-shadow">
-        <h1 className="  p-2 font-bold">{book.pages?.length}</h1>
+        <h1 className="  p-2 font-bold">{book.totalPages || 0}</h1>
         <p className=" ">Pages</p>
       </div>
       <div className="p-4 shadow  rounded-xl flex flex-col items-center hover:shadow-lg transition-shadow">

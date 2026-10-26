@@ -6,6 +6,7 @@ import {
   Settings,
   BookOpen,
   Sparkles,
+  Database,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -14,6 +15,7 @@ const NAV_ITEMS = [
   { id: "settings", label: "Settings", icon: Settings },
   { id: "books", label: "Books", icon: BookOpen },
   { id: "pdf-ai", label: "PDF & AI Engine", icon: Sparkles, badge: "AI" },
+  { id: "data", label: "Data models", icon: Database },
 ];
 
 const AdminSidebar: React.FC = () => {

@@ -48,7 +48,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
         <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-2 bg-card/90 backdrop-blur border-b border-border shadow-sm">
           <SidebarToggle
             isOpen={leftBarOpen}
-            onClick={() => setLeftBarOpen(!leftBarOpen)}
+            onClick={() => setLeftBarOpen((isOpen) => !isOpen)}
             OpenIcon={SidebarOpen}
             CloseIcon={SidebarClose}
             label="Chapters"
@@ -61,7 +61,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
 
           <SidebarToggle
             isOpen={rightBarOpen}
-            onClick={() => setRightBarOpen(!rightBarOpen)}
+            onClick={() => setRightBarOpen((isOpen) => !isOpen)}
             OpenIcon={PanelRightOpen}
             CloseIcon={PanelRightClose}
             label="Versions & Authors"
@@ -88,7 +88,7 @@ const Page = ({ params }: { params: Promise<{ id: string }> }) => {
             </AnimatePresence>
 
             {/* Central Reader Page */}
-            <div className="flex-1 w-full max-w-5xl px-3 py-4 flex justify-center">
+            <div className="flex-1 w-full max-w-5xl flex justify-center">
               <ReadPage />
             </div>
 

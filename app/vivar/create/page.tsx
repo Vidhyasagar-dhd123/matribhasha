@@ -106,7 +106,7 @@ export default function CreateVivarPage() {
       setError(null);
       try {
         const res = await fetch(
-          `/api/v1/pages/${selectedBook.uuid}/${selectedPageNum}?language=${encodeURIComponent(language)}`
+          `/api/v1/books/${selectedBook.uuid}/pages/${selectedPageNum}?language=${encodeURIComponent(language)}`
         );
         if (res.ok && isMounted) {
           const data = await res.json();
@@ -165,7 +165,7 @@ export default function CreateVivarPage() {
     setError(null);
 
     try {
-      const res = await fetch("/api/v1/vivar", {
+      const res = await fetch("/api/v1/vivars", {
         method: "POST",
         headers: getRequestHeaders(true),
         body: JSON.stringify({

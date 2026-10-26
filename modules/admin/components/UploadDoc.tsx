@@ -33,7 +33,7 @@ export default function UploadDoc({
 		setMessage(null);
 
 		try {
-			const response = await fetch("/api/v1/admin/upload", {
+			const response = await fetch("/api/v1/admin/documents/uploads", {
 				method: "POST",
 				headers: getRequestHeaders(false),
 				body: formData,

@@ -96,8 +96,39 @@ interface UserDashboardData {
   }[];
 }
 
+const EMPTY_USER_DATA: UserDashboardData = {
+  stats: {
+    translatedPages: 0,
+    translatedBooks: 0,
+    languagesCount: 0,
+    vivarPosts: 0,
+    totalLikesReceived: 0,
+  },
+  translatedLanguages: [],
+  recentTranslations: [],
+  translatedBooks: [],
+  recentBookmarks: [],
+  recentVivars: [],
+};
+
+const EMPTY_PLATFORM_DATA: PlatformAnalytics = {
+  summary: {
+    totalBooks: 0,
+    totalUsers: 0,
+    totalPages: 0,
+    totalVersions: 0,
+    multiVersionBooks: 0,
+    totalLanguages: 0,
+    blockedUsers: 0,
+    vivarPosts: 0,
+  },
+  booksByLanguage: [],
+  recentBooks: [],
+  topAuthors: [],
+};
+
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<"personal" | "platform">("personal");
   const [platformData, setPlatformData] = useState<PlatformAnalytics | null>(null);
   const [userData, setUserData] = useState<UserDashboardData | null>(null);
@@ -107,39 +138,67 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadData() {
+      if (authLoading) return;
+
       setLoading(true);
       setError(null);
+      setUserData(null);
+      setPlatformData(null);
+
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       try {
-        if (user) {
-          // Load personal dashboard
-          const userRes = await fetch("/api/v1/users/dashboard", {
+        const userRes = await fetch("/api/v1/users/me/activity", {
+          headers: getRequestHeaders(true),
+        });
+        if (userRes.ok) {
+          const userJson = await userRes.json();
+          setUserData({
+            ...EMPTY_USER_DATA,
+            ...userJson,
+            stats: { ...EMPTY_USER_DATA.stats, ...(userJson?.stats || {}) },
+            translatedLanguages: userJson?.translatedLanguages || [],
+            recentTranslations: userJson?.recentTranslations || [],
+            translatedBooks: userJson?.translatedBooks || [],
+            recentBookmarks: userJson?.recentBookmarks || [],
+            recentVivars: userJson?.recentVivars || [],
+          });
+          setActiveTab("personal");
+        } else {
+          setUserData(EMPTY_USER_DATA);
+          setError("Personal dashboard data is temporarily unavailable.");
+        }
+
+        if (user.role === "admin") {
+          const platformRes = await fetch("/api/v1/reports", {
             headers: getRequestHeaders(true),
           });
-          if (userRes.ok) {
-            const userJson = await userRes.json();
-            setUserData(userJson);
-            setActiveTab("personal");
-          }
-
-          // If admin, load platform analytics
-          if (user.role === "admin") {
-            const platformRes = await fetch("/api/v1/dashboard", {
-              headers: getRequestHeaders(true),
+          if (platformRes.ok) {
+            const json = await platformRes.json();
+            setPlatformData({
+              ...EMPTY_PLATFORM_DATA,
+              ...json,
+              summary: { ...EMPTY_PLATFORM_DATA.summary, ...(json?.summary || {}) },
+              booksByLanguage: json?.booksByLanguage || [],
+              recentBooks: json?.recentBooks || [],
+              topAuthors: json?.topAuthors || [],
             });
-            if (platformRes.ok) {
-              const json = await platformRes.json();
-              setPlatformData(json);
-            }
+          } else {
+            setPlatformData(EMPTY_PLATFORM_DATA);
           }
         }
       } catch {
-        setError("Network error loading dashboard metrics.");
+        setUserData(EMPTY_USER_DATA);
+        setError("Some dashboard data is temporarily unavailable.");
       } finally {
         setLoading(false);
       }
     }
     loadData();
-  }, [user]);
+  }, [user, authLoading]);
 
   if (loading) {
     return (
@@ -180,18 +239,9 @@ export default function DashboardPage() {
     );
   }
 
-  if (error || (activeTab === "personal" && !userData)) {
-    return (
-      <div className="mx-auto max-w-4xl py-12 px-4 text-center">
-        <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-8 text-destructive">
-          <h2 className="text-lg font-bold">Unable to load workspace metrics</h2>
-          <p className="mt-1 text-sm">{error || "Could not retrieve your dashboard activity."}</p>
-        </div>
-      </div>
-    );
-  }
-
-  const summary = platformData?.summary;
+  const safeUserData = userData || EMPTY_USER_DATA;
+  const safePlatformData = platformData || EMPTY_PLATFORM_DATA;
+  const summary = safePlatformData.summary;
   const booksByLanguage = platformData?.booksByLanguage || [];
   const recentBooks = platformData?.recentBooks || [];
   const topAuthors = platformData?.topAuthors || [];
@@ -269,7 +319,13 @@ export default function DashboardPage() {
         </div>
 
         {/* PERSONAL TRANSLATOR DASHBOARD VIEW */}
-        {activeTab === "personal" && userData ? (
+        {error && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
+            {error}
+          </div>
+        )}
+
+        {activeTab === "personal" ? (
           <div className="space-y-8">
             {/* Personal Stat Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -281,10 +337,10 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3 text-3xl font-bold text-foreground">
-                  {userData.stats.translatedPages}
+                  {safeUserData.stats.translatedPages}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  across {userData.stats.translatedBooks} books
+                  across {safeUserData.stats.translatedBooks} books
                 </div>
               </div>
 
@@ -296,10 +352,10 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3 text-3xl font-bold text-foreground">
-                  {userData.stats.languagesCount}
+                  {safeUserData.stats.languagesCount}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {userData.translatedLanguages.join(", ") || "Active contributor"}
+                  {safeUserData.translatedLanguages.join(", ") || "No languages yet"}
                 </div>
               </div>
 
@@ -311,7 +367,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3 text-3xl font-bold text-foreground">
-                  {userData.stats.vivarPosts}
+                  {safeUserData.stats.vivarPosts}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">Quotes shared</div>
               </div>
@@ -324,7 +380,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
                 <div className="mt-3 text-3xl font-bold text-foreground">
-                  {userData.stats.totalLikesReceived}
+                  {safeUserData.stats.totalLikesReceived}
                 </div>
                 <div className="mt-1 text-xs text-muted-foreground">Community likes</div>
               </div>
@@ -340,12 +396,12 @@ export default function DashboardPage() {
                     Reading & Studio Bookmarks
                   </h2>
                   <div className="space-y-3">
-                    {userData.recentBookmarks.length === 0 ? (
+                    {safeUserData.recentBookmarks.length === 0 ? (
                       <p className="text-xs text-muted-foreground py-4">
                         No bookmarks recorded. Read or translate a book to save your spot!
                       </p>
                     ) : (
-                      userData.recentBookmarks.slice(0, 4).map((item) => (
+                      safeUserData.recentBookmarks.slice(0, 4).map((item) => (
                         <Link
                           key={item.bookUUID}
                           href={
@@ -387,12 +443,12 @@ export default function DashboardPage() {
                     Your Contributed Books
                   </h2>
                   <div className="space-y-3">
-                    {userData.translatedBooks.length === 0 ? (
+                    {safeUserData.translatedBooks.length === 0 ? (
                       <p className="text-xs text-muted-foreground py-4">
                         You haven&apos;t contributed translations yet. Pick any book in the workspace to start translating!
                       </p>
                     ) : (
-                      userData.translatedBooks.slice(0, 4).map((book) => (
+                      safeUserData.translatedBooks.slice(0, 4).map((book) => (
                         <Link
                           key={book.uuid}
                           href={`/workspace/${book.uuid}`}

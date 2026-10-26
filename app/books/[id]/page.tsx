@@ -82,7 +82,7 @@ function BookDescription({ params }: { params: Promise<{ id: string }> }) {
   const stats = useMemo(() => {
     if (!book) return null;
     return {
-      totalPages: book.pages ? book.pages.length : 0,
+      totalPages: book.totalPages || 0,
       versionCount: book.versions?.length || 0,
       contributors: book.contributors || 0,
     };

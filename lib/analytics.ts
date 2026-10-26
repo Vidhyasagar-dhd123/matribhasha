@@ -17,6 +17,7 @@ export async function getCatalogAnalytics() {
     totalUsers,
     totalPages,
     totalVersions,
+    originalPagesByBook,
     booksByLanguage,
     recentBooks,
     topAuthors,
@@ -29,6 +30,9 @@ export async function getCatalogAnalytics() {
     User.countDocuments(),
     Page.countDocuments(),
     PageVersion.countDocuments(),
+    Page.aggregate([
+      { $group: { _id: "$bookUUID", count: { $sum: 1 } } },
+    ]),
     Book.aggregate([
       { $group: { _id: "$originalLanguage", count: { $sum: 1 } } },
       { $sort: { count: -1, _id: 1 } },
@@ -100,6 +104,9 @@ export async function getCatalogAnalytics() {
       item,
     ])
   )
+  const originalPageCountsByBook = new Map(
+    originalPagesByBook.map((item: { _id: string; count: number }) => [item._id, item.count])
+  )
 
   const usersByRole = await User.aggregate([
     { $group: { _id: "$role", count: { $sum: 1 } } },
@@ -133,7 +140,7 @@ export async function getCatalogAnalytics() {
           originalLanguage: book.originalLanguage,
           uuid: book.uuid,
           coverURI: book.coverURI,
-          pages: book.pages?.length || 0,
+          pages: originalPageCountsByBook.get(book.uuid) || 0,
           versions: stats?.versions || 0,
           contributors: stats?.contributors?.filter(Boolean).length || 0,
           translatedLanguages: stats?.languages?.filter(Boolean) || [],

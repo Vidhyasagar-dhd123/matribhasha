@@ -67,12 +67,13 @@ export default function VivarPage() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
+  const touchStartYRef = useRef<number | null>(null);
 
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/v1/vivar", {
+      const res = await fetch("/api/v1/vivars", {
         headers: getRequestHeaders(false),
       });
       if (res.ok) {
@@ -106,6 +107,44 @@ export default function VivarPage() {
       }, 600);
     }
   }, []);
+
+  const handleWheel = useCallback((event: WheelEvent) => {
+    event.preventDefault();
+    if (isScrollingRef.current || Math.abs(event.deltaY) < 8) return;
+
+    if (event.deltaY > 0 && currentIndex < posts.length - 1) {
+      scrollToReel(currentIndex + 1);
+    } else if (event.deltaY < 0 && currentIndex > 0) {
+      scrollToReel(currentIndex - 1);
+    }
+  }, [currentIndex, posts.length, scrollToReel]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener("wheel", handleWheel, { passive: false });
+    return () => container.removeEventListener("wheel", handleWheel);
+  }, [handleWheel]);
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartYRef.current = event.touches[0]?.clientY ?? null;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    const startY = touchStartYRef.current;
+    touchStartYRef.current = null;
+    if (startY === null || isScrollingRef.current) return;
+
+    const endY = event.changedTouches[0]?.clientY;
+    if (endY === undefined || Math.abs(endY - startY) < 24) return;
+
+    if (endY < startY && currentIndex < posts.length - 1) {
+      scrollToReel(currentIndex + 1);
+    } else if (endY > startY && currentIndex > 0) {
+      scrollToReel(currentIndex - 1);
+    }
+  };
 
   // Track active visible reel on scroll
   const handleContainerScroll = () => {
@@ -150,7 +189,7 @@ export default function VivarPage() {
       return;
     }
     try {
-      const res = await fetch(`/api/v1/vivar/${postId}/like`, {
+      const res = await fetch(`/api/v1/vivars/${postId}/likes`, {
         method: "POST",
         headers: getRequestHeaders(true),
       });
@@ -179,7 +218,7 @@ export default function VivarPage() {
   const handleDelete = async (postId: string) => {
     if (!confirm("Are you sure you want to delete this Vivar reel?")) return;
     try {
-      const res = await fetch(`/api/v1/vivar/${postId}`, {
+      const res = await fetch(`/api/v1/vivars/${postId}`, {
         method: "DELETE",
         headers: getRequestHeaders(true),
       });
@@ -207,7 +246,7 @@ export default function VivarPage() {
     setEditError(null);
 
     try {
-      const res = await fetch(`/api/v1/vivar/${editingPost._id}`, {
+      const res = await fetch(`/api/v1/vivars/${editingPost._id}`, {
         method: "PUT",
         headers: getRequestHeaders(true),
         body: JSON.stringify({
@@ -242,9 +281,9 @@ export default function VivarPage() {
   };
 
   return (
-    <div className="h-screen w-full bg-background text-foreground flex flex-col overflow-hidden select-none">
+    <div className="h-[100dvh] w-full bg-background text-foreground flex flex-col overflow-hidden select-none">
       {/* Top Controls Bar */}
-      <header className="border-b border-border bg-card/90 backdrop-blur shrink-0 z-30 px-4 py-2.5">
+      <header className="hidden border-b border-border bg-card/90 backdrop-blur shrink-0 z-30 px-4 py-2.5 md:block">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/15 text-amber-500 shadow-xs">
@@ -338,8 +377,10 @@ export default function VivarPage() {
           <div
             ref={containerRef}
             onScroll={handleContainerScroll}
-            className="w-full h-full overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none flex flex-col items-center"
-            style={{ scrollSnapType: "y mandatory" }}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            className="w-full h-full overflow-y-scroll snap-y snap-mandatory scroll-smooth scrollbar-none flex flex-col items-center touch-none md:touch-auto"
+            style={{ scrollSnapType: "y mandatory", overscrollBehavior: "contain" }}
           >
             {posts.map((post, idx) => {
               const gradient = GRADIENTS[idx % GRADIENTS.length];
@@ -351,12 +392,12 @@ export default function VivarPage() {
               return (
                 <section
                   key={post._id}
-                  className="w-full h-[calc(100vh-55px)] shrink-0 snap-start snap-always flex items-center justify-center p-3 relative"
+                  className="w-full h-[100dvh] md:h-[calc(100vh-55px)] shrink-0 snap-start snap-always flex items-center justify-center relative"
                 >
-                  <div className="relative w-full max-w-[420px] h-full max-h-[740px] flex items-center gap-3">
+                  <div className="relative w-full max-w-full md:max-w-[420px] md:bg-black h-full flex items-center gap-3">
                     {/* Main Reel Video/Quote Card */}
                     <div
-                      className={`relative flex-1 h-full rounded-3xl border border-border/80 bg-gradient-to-b ${gradient} bg-card shadow-2xl p-6 sm:p-7 flex flex-col justify-between overflow-hidden backdrop-blur`}
+                      className={`relative flex-1 h-full rounded-none border-0 md:border  md:max-h-[740px] md:border-border/80 bg-gradient-to-b ${gradient} bg-card shadow-none md:shadow-2xl p-4 sm:p-7 flex flex-col justify-between overflow-hidden backdrop-blur`}
                     >
                       {/* Ambient Watermark Quote Icon */}
                       <Quote className="absolute -bottom-6 -right-6 h-48 w-48 text-foreground/5 pointer-events-none" />
@@ -413,7 +454,7 @@ export default function VivarPage() {
                     </div>
 
                     {/* YouTube Shorts / Reels Vertical Floating Action Rail */}
-                    <div className="flex flex-col items-center justify-end gap-3 pb-4 z-20 shrink-0">
+                    <div className="absolute right-4 flex flex-col items-center justify-end gap-3 pb-4 z-20 shrink-0">
                       {/* Like Action */}
                       <button
                         onClick={() => handleLike(post._id)}

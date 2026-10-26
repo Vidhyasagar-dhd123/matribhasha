@@ -1,39 +1,196 @@
-import connection from "@/lib/database";
-import Book from "@/modules/books/models/Book.model";
-import Page from "@/modules/books/models/Pages.model";
+import connection from "@/lib/database"
+import Page from "@/modules/books/models/Pages.model"
+import PageVersion from "@/modules/books/models/PageVersion.model"
+import User from "@/modules/user/models/user.model"
+import ReadingProgress from "@/modules/user/models/ReadingProgress.model"
+import authenticateUser from "@/lib/auth"
+
+type AuthenticatedUser = {
+    id?: string;
+    _id?: string;
+    role?: string;
+}
 
 
-export async function GET(req:Request,{params}:{params:Promise<{id:string, pageNo:string}>}){
+export async function GET(req:Request,{params}:{params:Promise<{pageNo:string|undefined|null,id:string}>}){
     try
-    {
+    {   
         await connection()
+        const {searchParams} = new URL(req.url)
+
+        const author = searchParams.get("author")
+        const language = searchParams.get("language")
+
         const {id,pageNo} = await params
         const pageNumber = Number(pageNo)
-        console.log(id)
-        const book = await Book.findOne({uuid:id})
-        if(!id && !pageNo)
-        {   
-            console.log("ID validation Failed for Page Request")
-            return Response.json({message:"Invalid Request"})
-        }
-        if(!book)
+
+        if (!pageNo || isNaN(Number(pageNo)) || !id) 
         {
-            console.log("Book Not Found")
-            return Response.json({message:"Book Not Found"},{status:404})
+            console.log("Invalid Request:", id);
+            return Response.json({ message: "Invalid Request" }, { status: 400 });
         }
-        const next_pages = await Page.find({bookId:book._id,pageNumber:{$gte:pageNumber}}).sort({pageNumber:1}).limit(5)
-        const prev_pages = await Page.find({bookId:book._id,pageNumber:{$lt:pageNumber}}).sort({pageNumber:-1}).limit(5)
 
-        const paginated_pages = [...prev_pages.reverse(),...next_pages]
+        const page = await Page.findOne({pageNumber,bookUUID:id})
 
-        if(!paginated_pages){
-            return Response.json({message:"No Pages Found"},{status:404})
+        if(!page)
+        {
+            console.log("Page not Found")
+            return Response.json({message:"Page Not Found"},{status:404})
         }
-        return Response.json(paginated_pages,{status:200})
+
+        let userId;
+
+        if(author)
+        {
+            const user = await User.findOne({email:author})
+            if(!user)
+            {
+                return Response.json({message:"Author Not Found"},{status:404})
+            }
+            userId = user._id
+        }
+
+        const query : Record<string,unknown> = {pageId:page._id}
+
+        if(userId) query.authorId = userId;
+
+        query.language = language||page.originalLanguage;
+
+        const versioned_page = await PageVersion.findOne(query).populate({path:"authorId",select:"name email -_id"})
+        
+        if(!versioned_page){
+            console.log("Version Not Found")
+            return Response.json({message:"No Translation For This Page"},{status:404})
+        }
+        return Response.json(versioned_page,{status:200})
     }
     catch(err)
     {
         console.log(err)
         return Response.json({message:"Something Went Wrong"},{status:500})
+    }
+}
+export async function PUT(
+    req: Request,
+    { params }: { params: Promise<{ pageNo: string | undefined | null; id: string }> }
+) {
+    try {
+        await connection();
+
+        const currentUser = await authenticateUser(req);
+
+        if (
+            !currentUser ||
+            typeof currentUser !== "object"
+        ) {
+            return Response.json(
+                { message: "Unauthorized" },
+                { status: 401 }
+            );
+        }
+
+        const { id, pageNo } = await params;
+        const pageNumber = Number(pageNo);
+
+        if (!id || !Number.isFinite(pageNumber)) {
+            return Response.json(
+                { message: "Invalid Request" },
+                { status: 400 }
+            );
+        }
+
+        const body = await req.json();
+
+        const language = String(
+            body.language || body.originalLanguage || ""
+        ).trim();
+
+        const content = String(
+            body.content || ""
+        ).trim();
+
+        if (!language || !content) {
+            return Response.json(
+                { message: "Language and content are required" },
+                { status: 400 }
+            );
+        }
+
+        const page = await Page.findOne({
+            pageNumber,
+            bookUUID: id,
+        });
+
+        if (!page) {
+            return Response.json(
+                { message: "Page Not Found" },
+                { status: 404 }
+            );
+        }
+
+        const authorId = String(
+            (currentUser as { id?: string; _id?: string }).id ||
+            (currentUser as { id?: string; _id?: string })._id ||
+            ""
+        );
+
+        if (!authorId) {
+            return Response.json(
+                { message: "Invalid User" },
+                { status: 401 }
+            );
+        }
+
+        const updatedPage = await PageVersion.findOneAndUpdate(
+            {
+                pageId: page._id,
+                language,
+                authorId,
+            },
+            {
+                $set: {
+                    content,
+                    language,
+                    authorId,
+                    pageId: page._id,
+                },
+            },
+            {
+                new: true,
+                upsert: true,
+            }
+        ).populate("authorId", "name email username").populate("pageId", "pageNumber bookUUID");
+
+        // Record translator progress
+        try {
+            await ReadingProgress.findOneAndUpdate(
+                {
+                    userId: authorId,
+                    bookUUID: id,
+                    role: "translator",
+                },
+                {
+                    $set: {
+                        pageNumber,
+                        language,
+                        updatedAt: new Date(),
+                    },
+                },
+                { upsert: true }
+            );
+        } catch (progressErr) {
+            console.error("Error saving translator progress:", progressErr);
+        }
+
+        return Response.json(updatedPage, {
+            status: 200,
+        });
+    } catch (error) {
+        console.error("Error updating page version:", error);
+
+        return Response.json(
+            { message: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

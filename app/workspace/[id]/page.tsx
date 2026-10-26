@@ -118,7 +118,7 @@ function WorkspaceContainer({ id }: { id: string }) {
       if (!bookUuid) return;
       try {
         const res = await fetch(
-          `/api/v1/pages/${bookUuid}/${activePageNumber}?language=${encodeURIComponent(targetLang)}`
+          `/api/v1/books/${bookUuid}/pages/${activePageNumber}?language=${encodeURIComponent(targetLang)}`
         );
         if (res.ok && isMounted) {
           const data = await res.json();
@@ -148,7 +148,7 @@ function WorkspaceContainer({ id }: { id: string }) {
       // First get reference text
       const srcLang = language?.data || book.data?.originalLanguage || "eng_Latn";
       const refRes = await fetch(
-        `/api/v1/pages/${bookUuid}/${activePageNumber}?language=${encodeURIComponent(srcLang)}`
+        `/api/v1/books/${bookUuid}/pages/${activePageNumber}?language=${encodeURIComponent(srcLang)}`
       );
       let refText = "";
       if (refRes.ok) {
@@ -200,7 +200,7 @@ function WorkspaceContainer({ id }: { id: string }) {
         const chunk = chunks[i];
         setStatus(`Translating segment ${i + 1}/${chunks.length}...`);
 
-        const response = await fetch("/api/v1/translate", {
+        const response = await fetch("/api/v1/translations", {
           method: "POST",
           headers: getRequestHeaders(),
           body: JSON.stringify({
@@ -241,7 +241,7 @@ function WorkspaceContainer({ id }: { id: string }) {
     setStatus(null);
 
     try {
-      const response = await fetch(`/api/v1/pages/${bookUuid}/${activePageNumber}`, {
+      const response = await fetch(`/api/v1/books/${bookUuid}/pages/${activePageNumber}`, {
         method: "PUT",
         headers: getRequestHeaders(),
         body: JSON.stringify({

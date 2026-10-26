@@ -63,7 +63,7 @@ export const deleteUser = async (id: string) => {
 
 export const toggleBlockUser = async (id: string) => {
     try {
-        const response = await fetch(`${BASE_URL}api/v1/users/${id}/block`, {
+        const response = await fetch(`${BASE_URL}api/v1/users/${id}/status`, {
             method: 'POST',
             headers: getRequestHeaders(false),
         });

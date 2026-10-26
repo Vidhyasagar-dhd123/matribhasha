@@ -12,7 +12,7 @@ const ReadQueryManager = () => {
       if (!page?.data?.bookUUID || page?.data?.pageNumber === undefined) return;
       try {
         const data = await fetch(
-          `/api/v1/pages/${page.data.bookUUID}/${page.data.pageNumber}/authors`
+          `/api/v1/books/${page.data.bookUUID}/pages/${page.data.pageNumber}/authors`
         );
         if (data.ok) {
           const req_author = await data.json();

@@ -7,6 +7,7 @@ import { UsersProvider } from "../contexts/UserContext";
 import AdminDashboardPanel from "./AdminDashboardPanel";
 import AdminSettingsPanel from "./AdminSettingsPanel";
 import PdfIntelligencePanel from "./PdfIntelligencePanel";
+import DataModelsPanel from "./DataModelsPanel";
 
 
 const AdminLinkProvider = () => {
@@ -33,6 +34,8 @@ const AdminLinkProvider = () => {
                 );
             case 'pdf-ai':
                 return <PdfIntelligencePanel />;
+            case 'data':
+                return <DataModelsPanel />;
             default:
                 return <AdminDashboardPanel />;
         }

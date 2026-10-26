@@ -18,30 +18,31 @@ export const ReadProvider = ({ id, children }: { id: string; children: ReactNode
   const [chapter, setChapter] = useState<object>({});
   const [chapters, setChapters] = useState<object[]>([]);
   const [contentPage, setContentPage] = useState<PageVersion | null>(null);
+  const [contentLoading, setContentLoading] = useState(false);
   const [book, setBook] = useState<Book | null>(null);
 
   // Load Book Details
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     const loadBook = async () => {
       try {
-        const data = await fetch(`/api/v1/books/${id}`);
-        if (data.ok && isMounted) {
+        const data = await fetch(`/api/v1/books/${id}`, { signal: controller.signal });
+        if (data.ok) {
           const resBook = await data.json();
           setBook(resBook);
-          if (resBook.originalLanguage && !language) {
-            setLanguage(resBook.originalLanguage);
+          if (resBook.originalLanguage) {
+            setLanguage((currentLanguage) => currentLanguage ?? resBook.originalLanguage);
           }
         }
       } catch (err) {
-        console.error("Error loading book:", err);
+        if (!(err instanceof DOMException && err.name === "AbortError")) {
+          console.error("Error loading book:", err);
+        }
       }
     };
     if (id) loadBook();
-    return () => {
-      isMounted = false;
-    };
-  }, [id, language]);
+    return () => controller.abort();
+  }, [id]);
 
   // Load Book Pages
   const loadPages = useCallback(async (bookIdentifier: string) => {
@@ -67,30 +68,41 @@ export const ReadProvider = ({ id, children }: { id: string; children: ReactNode
 
   // Load Active Page Content when page or language changes
   useEffect(() => {
-    let isMounted = true;
+    const controller = new AbortController();
     const loadPageContent = async () => {
-      if (!book?.uuid || page?.pageNumber === undefined) return;
+      if (!book?.uuid || page?.pageNumber === undefined) {
+        setContentPage(null);
+        setContentLoading(false);
+        return;
+      }
+
+      setContentLoading(true);
       try {
         const params = new URLSearchParams();
         if (language) params.set("language", language);
         if (author?.authorId?.email) params.set("author", author.authorId.email);
 
-        const res = await fetch(`/api/v1/pages/${book.uuid}/${page.pageNumber}?${params.toString()}`);
-        if (res.ok && isMounted) {
+        const res = await fetch(
+          `/api/v1/books/${book.uuid}/pages/${page.pageNumber}?${params.toString()}`,
+          { signal: controller.signal }
+        );
+        if (res.ok) {
           const versionData = await res.json();
           setContentPage(versionData);
-        } else if (isMounted) {
+        } else {
           setContentPage(null);
         }
-      } catch {
-        if (isMounted) setContentPage(null);
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        console.error("Error loading page content:", err);
+        setContentPage(null);
+      } finally {
+        if (!controller.signal.aborted) setContentLoading(false);
       }
     };
 
     loadPageContent();
-    return () => {
-      isMounted = false;
-    };
+    return () => controller.abort();
   }, [book?.uuid, page?.pageNumber, language, author?.authorId?.email]);
 
   const value: Values = useMemo(
@@ -103,9 +115,9 @@ export const ReadProvider = ({ id, children }: { id: string; children: ReactNode
       chapter: { data: chapter, set: setChapter },
       chapters: { data: chapters, set: setChapters },
       language: { data: language, set: setLanguage },
-      content: { data: contentPage, set: setContentPage },
+      content: { data: contentPage, set: setContentPage, loading: contentLoading },
     }),
-    [book, authors, author, page, pages, chapter, chapters, language, contentPage]
+    [book, authors, author, page, pages, chapter, chapters, language, contentPage, contentLoading]
   );
 
   return <ReadContext.Provider value={value}>{children}</ReadContext.Provider>;
